@@ -4,6 +4,8 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PolicyTypeController;
+use App\Http\Controllers\InsuranceCompanyController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -14,11 +16,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
+    // Poliçe Türleri Yönetimi
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::resource('policy-types', PolicyTypeController::class);
+        Route::patch('policy-types/{policyType}/deactivate', [PolicyTypeController::class, 'deactivate'])->name('policy-types.deactivate');
+        Route::patch('policy-types/{policyType}/activate', [PolicyTypeController::class, 'activate'])->name('policy-types.activate');
+        Route::post('policy-types/update-order', [PolicyTypeController::class, 'updateOrder'])->name('policy-types.update-order');
+        Route::get('policy-types-api/active', [PolicyTypeController::class, 'getActive'])->name('policy-types.active');
+
+        Route::resource('insurance-companies', InsuranceCompanyController::class);
+        Route::patch('insurance-companies/{insuranceCompany}/deactivate', [InsuranceCompanyController::class, 'deactivate'])->name('insurance-companies.deactivate');
+        Route::patch('insurance-companies/{insuranceCompany}/activate', [InsuranceCompanyController::class, 'activate'])->name('insurance-companies.activate');
+        Route::post('insurance-companies/update-order', [InsuranceCompanyController::class, 'updateOrder'])->name('insurance-companies.update-order');
+        Route::get('insurance-companies-api/active', [InsuranceCompanyController::class, 'getActive'])->name('insurance-companies.active');
+    });
+
     // Dashboard Privacy API
     Route::get('/api/dashboard-privacy-settings', [App\Http\Controllers\Api\DashboardPrivacyController::class, 'getSettings']);
 
     // Müşteri Yönetimi - Spesifik route'lar önce gelmeli
     Route::get('customers/search', [CustomerController::class, 'search'])->name('customers.search');
+    Route::get('customers/export', [CustomerController::class, 'export'])->name('customers.export');
     Route::post('customers/find-or-create', [CustomerController::class, 'findOrCreate'])->name('customers.find-or-create');
     Route::post('customers/check-identity', [CustomerController::class, 'checkByIdentity'])->name('customers.check-identity');
     Route::post('customers/{customer}/payment-schedule', [CustomerController::class, 'addPaymentSchedule'])->name('customers.payment-schedule');

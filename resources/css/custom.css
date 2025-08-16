@@ -126,7 +126,9 @@
 
 /* WhatsApp and Excel button icon colors */
 .btn-success .fab.fa-whatsapp,
-.btn-success .fa-whatsapp {
+.btn-success .fa-whatsapp,
+.btn-success i.fab.fa-whatsapp,
+.btn-success i.fa-whatsapp {
     color: #ffffff !important;
 }
 
@@ -138,6 +140,21 @@
 .btn-outline-success:hover .fas.fa-file-excel,
 .btn-outline-success:hover .fa-file-excel {
     color: #ffffff !important;
+}
+
+/* General WhatsApp button styling */
+.btn-success:has(.fab.fa-whatsapp),
+.btn-success:has(.fa-whatsapp) {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-success:has(.fab.fa-whatsapp):hover,
+.btn-success:has(.fa-whatsapp):hover {
+    color: #ffffff !important;
+    background-color: #157347 !important;
+    border-color: #157347 !important;
 }
 
 /* General button icon colors */
@@ -159,6 +176,241 @@
 .btn-outline-success:hover .fas,
 .btn-outline-success:hover .fab,
 .btn-outline-success:hover .fa {
+    color: #ffffff !important;
+}
+
+/* WhatsApp button comprehensive styling */
+.btn-success:has(.fab.fa-whatsapp),
+.btn-success:has(.fa-whatsapp),
+.btn-success .fab.fa-whatsapp,
+.btn-success .fa-whatsapp {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-success:has(.fab.fa-whatsapp):hover,
+.btn-success:has(.fa-whatsapp):hover,
+.btn-success .fab.fa-whatsapp:hover,
+.btn-success .fa-whatsapp:hover {
+    color: #ffffff !important;
+    background-color: #157347 !important;
+    border-color: #157347 !important;
+}
+
+/* Excel button comprehensive styling */
+.btn-outline-success:has(svg),
+.btn-outline-success:has(.lucide),
+.btn-outline-success svg,
+.btn-outline-success .lucide {
+    color: #198754 !important;
+    stroke: #198754 !important;
+}
+
+.btn-outline-success:has(svg):hover,
+.btn-outline-success:has(.lucide):hover,
+.btn-outline-success:hover svg,
+.btn-outline-success:hover .lucide {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* Fix button color issues */
+.btn-success {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+    color: #ffffff !important;
+    background-color: #157347 !important;
+    border-color: #157347 !important;
+}
+
+/* Specific WhatsApp button fixes */
+.btn-success:has(.fab.fa-whatsapp),
+.btn-success:has(.fa-whatsapp) {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-success:has(.fab.fa-whatsapp):hover,
+.btn-success:has(.fa-whatsapp):hover {
+    color: #ffffff !important;
+    background-color: #157347 !important;
+    border-color: #157347 !important;
+}
+
+/* Specific Excel button fixes */
+.btn-outline-success:has(svg[data-lucide="download"]),
+.btn-outline-success:has(.lucide-download) {
+    color: #198754 !important;
+    border-color: #198754 !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-success:has(svg[data-lucide="download"]):hover,
+.btn-outline-success:has(.lucide-download):hover {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-outline-secondary {
+    color: #6c757d !important;
+    border-color: #6c757d !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+/* Fix emoji icon colors in buttons */
+.btn-success span,
+.btn-outline-secondary span {
+    color: inherit !important;
+}
+
+.btn-success:hover span,
+.btn-outline-secondary:hover span {
+    color: inherit !important;
+}
+
+/* Emoji icon color fix for all buttons */
+.btn span[style*="font-size"] {
+    color: inherit !important;
+}
+
+.btn:hover span[style*="font-size"] {
+    color: inherit !important;
+}
+
+/* Specific emoji icon fixes */
+.btn-success span[style*="font-size"],
+.btn-outline-secondary span[style*="font-size"],
+.btn-primary span[style*="font-size"] {
+    color: inherit !important;
+}
+
+.btn-success:hover span[style*="font-size"],
+.btn-outline-secondary:hover span[style*="font-size"],
+.btn-primary:hover span[style*="font-size"] {
+    color: inherit !important;
+}
+
+/* Excel export button specific styling */
+.btn-outline-success[onclick*="exportToExcel"],
+.btn-outline-success[onclick*="exportReport"],
+.btn-outline-success[id*="export-excel"],
+.btn-outline-success[onclick*="export"],
+.btn-outline-success {
+    color: #198754 !important;
+    border-color: #198754 !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-success[onclick*="exportToExcel"]:hover,
+.btn-outline-success[onclick*="exportToExcel"]:focus,
+.btn-outline-success[onclick*="exportToExcel"]:active,
+.btn-outline-success[onclick*="exportReport"]:hover,
+.btn-outline-success[onclick*="exportReport"]:focus,
+.btn-outline-success[onclick*="exportReport"]:active,
+.btn-outline-success[id*="export-excel"]:hover,
+.btn-outline-success[id*="export-excel"]:focus,
+.btn-outline-success[id*="export-excel"]:active,
+.btn-outline-success[onclick*="export"]:hover,
+.btn-outline-success[onclick*="export"]:focus,
+.btn-outline-success[onclick*="export"]:active,
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+/* Excel button icon color fix */
+.btn-outline-success .fas.fa-file-excel,
+.btn-outline-success .fa-file-excel,
+.btn-outline-success svg,
+.btn-outline-success .lucide {
+    color: #198754 !important;
+    stroke: #198754 !important;
+    fill: none !important;
+}
+
+.btn-outline-success:hover .fas.fa-file-excel,
+.btn-outline-success:hover .fa-file-excel,
+.btn-outline-success:hover svg,
+.btn-outline-success:hover .lucide {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+    fill: none !important;
+}
+
+/* Excel button text color fix */
+.btn-outline-success {
+    color: #198754 !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+    color: #ffffff !important;
+}
+
+/* WhatsApp button specific styling */
+.btn-success[href*="wa.me"],
+.btn-success[href*="whatsapp"],
+.btn-success .fab.fa-whatsapp,
+.btn-success .fa-whatsapp {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-success[href*="wa.me"]:hover,
+.btn-success[href*="wa.me"]:focus,
+.btn-success[href*="wa.me"]:active,
+.btn-success[href*="whatsapp"]:hover,
+.btn-success[href*="whatsapp"]:focus,
+.btn-success[href*="whatsapp"]:active,
+.btn-success .fab.fa-whatsapp:hover,
+.btn-success .fa-whatsapp:hover {
+    color: #ffffff !important;
+    background-color: #157347 !important;
+    border-color: #157347 !important;
+}
+
+/* WhatsApp button icon color fix */
+.btn-success[href*="wa.me"] i,
+.btn-success[href*="whatsapp"] i,
+.btn-success[href*="wa.me"] .fas,
+.btn-success[href*="whatsapp"] .fas,
+.btn-success[href*="wa.me"] .fab,
+.btn-success[href*="whatsapp"] .fab,
+.btn-success .fab.fa-whatsapp,
+.btn-success .fa-whatsapp {
+    color: #ffffff !important;
+}
+
+.btn-success[href*="wa.me"]:hover i,
+.btn-success[href*="whatsapp"]:hover i,
+.btn-success[href*="wa.me"]:hover .fas,
+.btn-success[href*="whatsapp"]:hover .fas,
+.btn-success[href*="wa.me"]:hover .fab,
+.btn-success[href*="whatsapp"]:hover .fab,
+.btn-success .fab.fa-whatsapp:hover,
+.btn-success .fa-whatsapp:hover {
     color: #ffffff !important;
 }
 
@@ -787,4 +1039,183 @@ table.dataTable thead th {
 
 .dataTables_length select {
     min-width: 80px;
+}
+
+/* WhatsApp Button Fixes - Force green background and white text */
+.btn-success {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+    color: #ffffff !important;
+    background-color: #157347 !important;
+    border-color: #157347 !important;
+}
+
+/* Excel Button Fixes - Force green outline and proper hover */
+.btn-outline-success {
+    color: #198754 !important;
+    border-color: #198754 !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+/* Force all icons in buttons to inherit color */
+.btn-success *,
+.btn-outline-success * {
+    color: inherit !important;
+}
+
+.btn-success:hover *,
+.btn-outline-success:hover * {
+    color: inherit !important;
+}
+
+/* Specific SVG icon fixes */
+.btn-outline-success svg {
+    stroke: currentColor !important;
+    fill: none !important;
+}
+
+.btn-outline-success:hover svg {
+    stroke: currentColor !important;
+    fill: none !important;
+}
+
+/* X Icon Button Fixes - Comprehensive */
+.btn-outline-secondary {
+    color: #6c757d !important;
+    border-color: #6c757d !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+/* Force all X icons to inherit button color */
+.btn-outline-secondary [data-lucide="x"],
+.btn-outline-secondary i[data-lucide="x"],
+.btn-outline-secondary svg[data-lucide="x"] {
+    color: inherit !important;
+    stroke: currentColor !important;
+}
+
+.btn-outline-secondary:hover [data-lucide="x"],
+.btn-outline-secondary:focus [data-lucide="x"],
+.btn-outline-secondary:active [data-lucide="x"],
+.btn-outline-secondary:hover i[data-lucide="x"],
+.btn-outline-secondary:focus i[data-lucide="x"],
+.btn-outline-secondary:active i[data-lucide="x"],
+.btn-outline-secondary:hover svg[data-lucide="x"],
+.btn-outline-secondary:focus svg[data-lucide="x"],
+.btn-outline-secondary:active svg[data-lucide="x"] {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* General button icon color inheritance */
+.btn * {
+    color: inherit !important;
+}
+
+.btn:hover *,
+.btn:focus *,
+.btn:active * {
+    color: inherit !important;
+}
+
+/* SVG specific fixes */
+.btn svg {
+    stroke: currentColor !important;
+    fill: none !important;
+}
+
+.btn:hover svg,
+.btn:focus svg,
+.btn:active svg {
+    stroke: currentColor !important;
+    fill: none !important;
+}
+
+/* X icon button fixes - Force white text on hover/active */
+.btn-outline-secondary:has([data-lucide="x"]),
+.btn-outline-secondary [data-lucide="x"] {
+    color: inherit !important;
+}
+
+.btn-outline-secondary:hover:has([data-lucide="x"]),
+.btn-outline-secondary:focus:has([data-lucide="x"]),
+.btn-outline-secondary:active:has([data-lucide="x"]) {
+    color: #ffffff !important;
+}
+
+.btn-outline-secondary:hover [data-lucide="x"],
+.btn-outline-secondary:focus [data-lucide="x"],
+.btn-outline-secondary:active [data-lucide="x"] {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* General X icon fixes for all buttons */
+.btn:has([data-lucide="x"]) [data-lucide="x"] {
+    color: inherit !important;
+    stroke: currentColor !important;
+}
+
+.btn:hover:has([data-lucide="x"]) [data-lucide="x"],
+.btn:focus:has([data-lucide="x"]) [data-lucide="x"],
+.btn:active:has([data-lucide="x"]) [data-lucide="x"] {
+    color: inherit !important;
+    stroke: currentColor !important;
+}
+
+/* Specific button type fixes for X icons */
+.btn-outline-secondary:has([data-lucide="x"]) {
+    color: #6c757d !important;
+    border-color: #6c757d !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-secondary:hover:has([data-lucide="x"]),
+.btn-outline-secondary:focus:has([data-lucide="x"]),
+.btn-outline-secondary:active:has([data-lucide="x"]) {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+/* Additional X icon fixes for other button types */
+.btn-outline-warning:has([data-lucide="x"]),
+.btn-outline-danger:has([data-lucide="x"]),
+.btn-outline-info:has([data-lucide="x"]) {
+    color: inherit !important;
+}
+
+.btn-outline-warning:hover:has([data-lucide="x"]),
+.btn-outline-danger:hover:has([data-lucide="x"]),
+.btn-outline-info:hover:has([data-lucide="x"]) {
+    color: #ffffff !important;
+}
+
+.btn-outline-warning:hover [data-lucide="x"],
+.btn-outline-danger:hover [data-lucide="x"],
+.btn-outline-info:hover [data-lucide="x"] {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }

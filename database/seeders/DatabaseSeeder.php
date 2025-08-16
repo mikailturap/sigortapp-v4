@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class, // Yeni müşteri sistemi
             PolicySeeder::class,
             DashboardPrivacySettingSeeder::class,
+            PolicyTypeSeeder::class, // Poliçe türleri
+            InsuranceCompanySeeder::class, // Sigorta şirketleri
         ]);
     }
 }

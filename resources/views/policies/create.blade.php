@@ -2,12 +2,26 @@
 
 @section('title', 'Yeni Poliçe Oluştur')
 
+@section('suppress_global_errors')
+@endsection
+
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="h4 font-weight-bold">
             Yeni Poliçe Oluştur
         </h2>
     </div>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <div class="fw-semibold mb-1">Formda hatalar var, lütfen düzeltin:</div>
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('policies.store') }}" method="POST">
         @csrf
@@ -17,38 +31,36 @@
                     <div class="card-header">Müşteri Bilgileri</div>
                     <div class="card-body">
                         <div class="mb-3">
+                            <label for="customer_identity_number" class="form-label">TC/Vergi No</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="customer_identity_number" name="customer_identity_number" value="{{ old('customer_identity_number') }}" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="checkCustomerIdentity()">Kontrol Et</button>
+                            </div>
+                            <div class="form-text">10 hane girilirse VKN, 11 hane girilirse TCKN doğrulaması yapılır.</div>
+                            <div id="identityCheckResult" class="mt-2"></div>
+                        </div>
+                        <div class="mb-3">
                             <label for="customer_title" class="form-label">Müşteri Ünvan</label>
-                            <input type="text" class="form-control" id="customer_title" name="customer_title" required>
+                            <input type="text" class="form-control" id="customer_title" name="customer_title" value="{{ old('customer_title') }}" required @if(!old('customer_title')) readonly @endif>
+                            <div class="form-text">Önce TC/Vergi No girin ve kontrol edin.</div>
                         </div>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="customer_identity_number" class="form-label">TC/Vergi No</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="customer_identity_number" name="customer_identity_number" required>
-                                        <button class="btn btn-outline-secondary" type="button" onclick="checkCustomerIdentity()">
-                                            <i class="fa-solid fa-search"></i>
-                                        </button>
-                                    </div>
-                                    <div id="identityCheckResult" class="mt-2"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
                                     <label for="customer_phone" class="form-label">Müşteri Telefon</label>
-                                    <input type="text" class="form-control" id="customer_phone" name="customer_phone" required>
+                                    <input type="text" class="form-control" id="customer_phone" name="customer_phone" placeholder="0___ ___ __ __" value="{{ old('customer_phone') }}" required @if(!old('customer_title')) readonly @endif>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="customer_birth_date" class="form-label">Doğum Tarihi</label>
-                                    <input type="date" class="form-control" id="customer_birth_date" name="customer_birth_date" required>
+                                    <input type="date" class="form-control" id="customer_birth_date" name="customer_birth_date" value="{{ old('customer_birth_date') }}" required @if(!old('customer_title')) readonly @endif>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="customer_address" class="form-label">Adres</label>
-                            <textarea class="form-control" id="customer_address" name="customer_address" rows="3" required></textarea>
+                            <textarea class="form-control" id="customer_address" name="customer_address" rows="3" required @if(!old('customer_title')) readonly @endif>{{ old('customer_address') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -58,11 +70,11 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="insured_name" class="form-label">Sigorta Ettiren Ünvan</label>
-                            <input type="text" class="form-control" id="insured_name" name="insured_name">
+                            <input type="text" class="form-control" id="insured_name" name="insured_name" value="{{ old('insured_name') }}">
                         </div>
                         <div class="mb-3">
                             <label for="insured_phone" class="form-label">Sigorta Ettiren Telefon</label>
-                            <input type="text" class="form-control" id="insured_phone" name="insured_phone">
+                            <input type="text" class="form-control" id="insured_phone" name="insured_phone" placeholder="0___ ___ __ __" value="{{ old('insured_phone') }}">
                         </div>
                     </div>
                 </div>
@@ -77,26 +89,28 @@
                                 <div class="mb-3">
                                     <label for="policy_type" class="form-label">Poliçe Türü</label>
                                     <select class="form-select" id="policy_type" name="policy_type" required>
-                                        <option value="Zorunlu Trafik Sigortası">Zorunlu Trafik Sigortası</option>
-                                        <option value="Kasko">Kasko</option>
-                                        <option value="DASK">DASK</option>
-                                        <option value="Konut Sigortası">Konut Sigortası</option>
-                                        <option value="Sağlık Sigortası">Sağlık Sigortası</option>
-                                        <option value="TARSİM">TARSİM</option>
+                                        <option value="">Poliçe türü seçin...</option>
+                                        @foreach(\App\Models\PolicyType::active()->ordered()->get() as $policyType)
+                                            <option value="{{ $policyType->name }}" @selected(old('policy_type') === $policyType->name)>{{ $policyType->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="policy_number" class="form-label">Poliçe No</label>
-                                    <input type="text" class="form-control" id="policy_number" name="policy_number" required>
+                                    <input type="text" class="form-control" id="policy_number" name="policy_number" value="{{ old('policy_number') }}" required>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="policy_company" class="form-label">Poliçe Şirketi</label>
-                            <input type="text" class="form-control" id="policy_company" name="policy_company" 
-                                   placeholder="Sigorta şirketi adı...">
+                            <select class="form-select" id="policy_company" name="policy_company">
+                                <option value="">Sigorta şirketi seçin...</option>
+                                @foreach(\App\Models\InsuranceCompany::active()->ordered()->get() as $company)
+                                    <option value="{{ $company->name }}" @selected(old('policy_company') === $company->name)>{{ $company->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="plate_or_other" class="form-label">
@@ -104,31 +118,31 @@
                                 Plaka/Diğer
                             </label>
                             <input type="text" class="form-control" id="plate_or_other" name="plate_or_other" 
-                                   placeholder="Araç plakası veya diğer tanımlayıcı bilgi...">
+                                   placeholder="Araç plakası veya diğer tanımlayıcı bilgi..." value="{{ old('plate_or_other') }}">
                         </div>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="issue_date" class="form-label">Tanzim Tarihi</label>
-                                    <input type="date" class="form-control" id="issue_date" name="issue_date" required>
+                                    <input type="date" class="form-control" id="issue_date" name="issue_date" value="{{ old('issue_date') }}" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="start_date" class="form-label">Başlangıç Tarihi</label>
-                                    <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ old('start_date') }}" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="end_date" class="form-label">Bitiş Tarihi</label>
-                                    <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ old('end_date') }}" required>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="document_info" class="form-label">Belge Seri/Diğer/UAVT</label>
-                            <input type="text" class="form-control" id="document_info" name="document_info">
+                            <input type="text" class="form-control" id="document_info" name="document_info" value="{{ old('document_info') }}">
                         </div>
                     </div>
                 </div>
@@ -140,13 +154,13 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="tarsim_business_number" class="form-label">TARSİM İşletme No</label>
-                                    <input type="text" class="form-control" id="tarsim_business_number" name="tarsim_business_number">
+                                    <input type="text" class="form-control" id="tarsim_business_number" name="tarsim_business_number" value="{{ old('tarsim_business_number') }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="tarsim_animal_number" class="form-label">TARSİM Hayvan No</label>
-                                    <input type="text" class="form-control" id="tarsim_animal_number" name="tarsim_animal_number">
+                                    <input type="text" class="form-control" id="tarsim_animal_number" name="tarsim_animal_number" value="{{ old('tarsim_animal_number') }}">
                                 </div>
                             </div>
                         </div>
@@ -168,27 +182,27 @@
                                 <div class="mb-3">
                                     <label for="policy_premium" class="form-label">Poliçe Primi (₺)</label>
                                     <input type="number" class="form-control" id="policy_premium" name="policy_premium" 
-                                           step="0.01" min="0" placeholder="0.00">
+                                           step="0.01" min="0" placeholder="0.00" value="{{ old('policy_premium') }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="commission_rate" class="form-label">Komisyon Oranı (%)</label>
                                     <input type="number" class="form-control" id="commission_rate" name="commission_rate" 
-                                           step="0.01" min="0" max="100" placeholder="0.00">
+                                           step="0.01" min="0" max="100" placeholder="0.00" value="{{ old('commission_rate') }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="payment_due_date" class="form-label">Ödeme Vade Tarihi</label>
-                                    <input type="date" class="form-control" id="payment_due_date" name="payment_due_date">
+                                    <input type="date" class="form-control" id="payment_due_date" name="payment_due_date" value="{{ old('payment_due_date') }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="tax_rate" class="form-label">Vergi Oranı (%)</label>
                                     <input type="number" class="form-control" id="tax_rate" name="tax_rate" 
-                                           step="0.01" min="0" max="100" value="18.00">
+                                           step="0.01" min="0" max="100" value="{{ old('tax_rate', '18.00') }}">
                                 </div>
                             </div>
                         </div>
@@ -197,14 +211,14 @@
                                 <div class="mb-3">
                                     <label for="payment_notes" class="form-label">Ödeme Notları</label>
                                     <textarea class="form-control" id="payment_notes" name="payment_notes" 
-                                              rows="2" placeholder="Ödeme ile ilgili notlar..."></textarea>
+                                              rows="2" placeholder="Ödeme ile ilgili notlar...">{{ old('payment_notes') }}</textarea>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="invoice_number" class="form-label">Fatura Numarası</label>
                                     <input type="text" class="form-control" id="invoice_number" name="invoice_number" 
-                                           placeholder="Fatura numarası...">
+                                           placeholder="Fatura numarası..." value="{{ old('invoice_number') }}">
                                 </div>
                             </div>
                         </div>
@@ -222,6 +236,78 @@
 
 @push('scripts')
 <script>
+// Kimlik doğrulama yardımcıları
+function isDigits(str) {
+    return /^\d+$/.test(str);
+}
+
+function isValidVKN(vkn) {
+    if (!/^\d{10}$/.test(vkn)) return false;
+    const digits = vkn.split('').map(d => parseInt(d, 10));
+    const lastDigit = digits[9];
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+        const digit = digits[i];
+        const tmp = (digit + 10 - (i + 1)) % 10;
+        if (tmp === 9) {
+            sum += tmp;
+        } else {
+            const pow2 = Math.pow(2, 9 - i); // 2^(10-(i+1)) = 2^(9-i)
+            const mod = (tmp * pow2) % 9;
+            sum += mod;
+        }
+    }
+    const check = (10 - (sum % 10)) % 10;
+    return lastDigit === check;
+}
+
+function isValidTCKN(tckn) {
+    if (!/^\d{11}$/.test(tckn)) return false;
+    const d = tckn.split('').map(n => parseInt(n, 10));
+    // Format kontrolünü ayrıca yapan regex zaten var ama burada da güvence olsun
+    if (!/^[1-9][0-9]{9}[02468]$/.test(tckn)) return false;
+    const o = d[0] + d[2] + d[4] + d[6] + d[8]; // tek indexler (1.,3.,5.,7.,9. haneler)
+    const e = d[1] + d[3] + d[5] + d[7];       // çift indexler (2.,4.,6.,8. haneler)
+    const c1 = (10 - ((o * 3 + e) % 10)) % 10;
+    const c2 = (10 - ((((e + c1) * 3) + o) % 10)) % 10;
+    return d[9] === c1 && d[10] === c2;
+}
+
+// Telefon formatlama yardımcıları (TR: 3-3-2-2)
+function formatPhoneTR(value) {
+    // Başına otomatik 0 ekleyelim, görüntüde de 0 ile başlasın
+    const raw = (value || '').replace(/\D/g, '');
+    let digits = raw;
+    if (digits.length === 0) return '';
+    if (digits[0] !== '0') digits = '0' + digits;
+    digits = digits.slice(0, 11); // 0 + 10 hane
+    // Görsel format: 0___ ___ __ __ (0 XXX XXX XX XX)
+    if (digits.length <= 1) return digits;
+    if (digits.length <= 4) return digits.slice(0,1) + digits.slice(1);
+    if (digits.length <= 7) return digits.slice(0,1) + digits.slice(1,4) + ' ' + digits.slice(4);
+    if (digits.length <= 9) return digits.slice(0,1) + digits.slice(1,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7);
+    return digits.slice(0,1) + digits.slice(1,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7,9) + ' ' + digits.slice(9,11);
+}
+
+// Yeni TC/Vergi sorgusunda önce müşteri alanlarını ve uyarıyı sıfırla
+function resetCustomerFieldsBeforeCheck() {
+    const resultDiv = document.getElementById('identityCheckResult');
+    if (resultDiv) { resultDiv.innerHTML = ''; }
+
+    const titleEl = document.getElementById('customer_title');
+    const phoneEl = document.getElementById('customer_phone');
+    const addressEl = document.getElementById('customer_address');
+    const birthEl = document.getElementById('customer_birth_date');
+
+    [titleEl, phoneEl, addressEl, birthEl].forEach(function(el){
+        if (!el) return;
+        el.readOnly = false;
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.value = '';
+        }
+    });
+}
+
 function checkCustomerIdentity() {
     const identityNumber = document.getElementById('customer_identity_number').value.trim();
     if (!identityNumber) {
@@ -229,8 +315,43 @@ function checkCustomerIdentity() {
         return;
     }
 
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    // Her yeni sorguda önce formu temizle
+    resetCustomerFieldsBeforeCheck();
+
+    // 1) Format kontrolü ve algoritma doğrulaması
     const resultDiv = document.getElementById('identityCheckResult');
+    const onlyDigits = /^\d+$/.test(identityNumber);
+    if (!onlyDigits) {
+        resultDiv.innerHTML = '<div class="alert alert-warning alert-sm">Sadece rakam giriniz.</div>';
+        return;
+    }
+    if (identityNumber.length === 10) {
+        // VKN format: ^[0-9]{10}$
+        if (!/^\d{10}$/.test(identityNumber)) {
+            resultDiv.innerHTML = '<div class="alert alert-warning alert-sm">Vergi No formatı geçersiz.</div>';
+            return;
+        }
+        if (!isValidVKN(identityNumber)) {
+            resultDiv.innerHTML = '<div class="alert alert-danger alert-sm">Vergi No algoritma doğrulaması başarısız.</div>';
+            return;
+        }
+    } else if (identityNumber.length === 11) {
+        // TCKN format: ^[1-9]{1}[0-9]{9}[02468]{1}$
+        if (!/^[1-9]{1}[0-9]{9}[02468]{1}$/.test(identityNumber)) {
+            resultDiv.innerHTML = '<div class="alert alert-warning alert-sm">TCKN formatı geçersiz.</div>';
+            return;
+        }
+        if (!isValidTCKN(identityNumber)) {
+            resultDiv.innerHTML = '<div class="alert alert-danger alert-sm">TCKN algoritma doğrulaması başarısız.</div>';
+            return;
+        }
+    } else {
+        resultDiv.innerHTML = '<div class="alert alert-warning alert-sm">TC için 11 hane, VKN için 10 hane giriniz.</div>';
+        return;
+    }
+
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
 
     fetch('/policies/check-customer-identity', {
         method: 'POST',
@@ -252,14 +373,16 @@ function checkCustomerIdentity() {
                     </div>
                 `;
                 
-                // Müşteri bilgilerini otomatik doldur
-                document.getElementById('customer_title').value = data.customer.customer_title;
-                if (data.customer.phone) {
-                    document.getElementById('customer_phone').value = data.customer.phone;
-                }
-                if (data.customer.address) {
-                    document.getElementById('customer_address').value = data.customer.address;
-                }
+                // Müşteri bilgilerini doldur ve kilitle
+                const titleEl = document.getElementById('customer_title');
+                const phoneEl = document.getElementById('customer_phone');
+                const addressEl = document.getElementById('customer_address');
+                const birthEl = document.getElementById('customer_birth_date');
+
+                if (titleEl) { titleEl.value = data.customer.customer_title || ''; titleEl.readOnly = true; }
+                if (phoneEl) { phoneEl.value = data.customer.phone || ''; phoneEl.readOnly = true; }
+                if (addressEl) { addressEl.value = data.customer.address || ''; addressEl.readOnly = true; }
+                if (birthEl) { birthEl.value = (data.customer.customer_birth_date || '').slice(0,10); birthEl.readOnly = true; }
             } else {
                 resultDiv.innerHTML = `
                     <div class="alert alert-info alert-sm">
@@ -267,6 +390,15 @@ function checkCustomerIdentity() {
                         <strong>Bilgi:</strong> Bu TC/Vergi no ile kayıtlı müşteri bulunamadı. Yeni müşteri oluşturulacak.
                     </div>
                 `;
+                // Yeni müşteri: alanları aktif et
+                const titleEl = document.getElementById('customer_title');
+                const phoneEl = document.getElementById('customer_phone');
+                const addressEl = document.getElementById('customer_address');
+                const birthEl = document.getElementById('customer_birth_date');
+                if (titleEl) titleEl.readOnly = false;
+                if (phoneEl) phoneEl.readOnly = false;
+                if (addressEl) addressEl.readOnly = false;
+                if (birthEl) birthEl.readOnly = false;
             }
         } else {
             resultDiv.innerHTML = `
@@ -299,9 +431,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    // Telefon alanları otomatik format
+    const phoneInputs = [
+        document.getElementById('customer_phone'),
+        document.getElementById('insured_phone')
+    ].filter(Boolean);
+    phoneInputs.forEach(function(el){
+        el.addEventListener('input', function(e){ e.target.value = formatPhoneTR(e.target.value); });
+        // Paste temizliği
+        el.addEventListener('paste', function(e){
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            e.target.value = formatPhoneTR(text);
+        });
+    });
     
     // URL parametrelerinden müşteri bilgilerini doldur
     fillCustomerInfoFromURL();
+
+    // TC/Vergi no yazılırken eski bilgiler formda kalmasın
+    const identityInput2 = document.getElementById('customer_identity_number');
+    if (identityInput2) {
+        identityInput2.addEventListener('input', function(){
+            resetCustomerFieldsBeforeCheck();
+        });
+    }
 });
 
 // URL parametrelerinden müşteri bilgilerini doldur

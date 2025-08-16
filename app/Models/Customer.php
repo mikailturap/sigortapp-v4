@@ -15,6 +15,7 @@ class Customer extends Model
         'customer_identity_number',
         'phone',
         'email',
+        'birth_date',
         'address',
         'credit_limit',
         'risk_level',
@@ -25,6 +26,7 @@ class Customer extends Model
 
     protected $casts = [
         'credit_limit' => 'decimal:2',
+        'birth_date' => 'date',
     ];
 
     // İlişkiler

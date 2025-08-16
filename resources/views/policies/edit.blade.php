@@ -96,12 +96,12 @@
                                 <div class="mb-3">
                                     <label for="policy_type" class="form-label fw-normal text-secondary">Poliçe Türü</label>
                                     <select class="form-select" id="policy_type" name="policy_type" required>
-                                        <option value="Zorunlu Trafik Sigortası" {{ $policy->policy_type == 'Zorunlu Trafik Sigortası' ? 'selected' : '' }}>Zorunlu Trafik Sigortası</option>
-                                        <option value="Kasko" {{ $policy->policy_type == 'Kasko' ? 'selected' : '' }}>Kasko</option>
-                                        <option value="DASK" {{ $policy->policy_type == 'DASK' ? 'selected' : '' }}>DASK</option>
-                                        <option value="Konut Sigortası" {{ $policy->policy_type == 'Konut Sigortası' ? 'selected' : '' }}>Konut Sigortası</option>
-                                        <option value="Sağlık Sigortası" {{ $policy->policy_type == 'Sağlık Sigortası' ? 'selected' : '' }}>Sağlık Sigortası</option>
-                                        <option value="TARSİM" {{ $policy->policy_type == 'TARSİM' ? 'selected' : '' }}>TARSİM</option>
+                                        <option value="">Poliçe türü seçin...</option>
+                                        @foreach(\App\Models\PolicyType::active()->ordered()->get() as $policyType)
+                                            <option value="{{ $policyType->name }}" {{ $policy->policy_type == $policyType->name ? 'selected' : '' }}>
+                                                {{ $policyType->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -114,9 +114,14 @@
                         </div>
                         <div class="mb-3">
                             <label for="policy_company" class="form-label fw-normal text-secondary">Poliçe Şirketi</label>
-                            <input type="text" class="form-control" id="policy_company" name="policy_company" 
-                                   value="{{ old('policy_company', $policy->policy_company) }}" 
-                                   placeholder="Sigorta şirketi adı...">
+                            <select class="form-select" id="policy_company" name="policy_company">
+                                <option value="">Sigorta şirketi seçin...</option>
+                                @foreach(\App\Models\InsuranceCompany::active()->ordered()->get() as $company)
+                                    <option value="{{ $company->name }}" {{ $policy->policy_company == $company->name ? 'selected' : '' }}>
+                                        {{ $company->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="plate_or_other" class="form-label">

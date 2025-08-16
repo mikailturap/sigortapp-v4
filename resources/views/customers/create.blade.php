@@ -52,17 +52,17 @@
                             <div class="col-md-6 mb-3">
                                 <label for="phone" class="form-label">Telefon</label>
                                 <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                       id="phone" name="phone" value="{{ old('phone') }}">
+                                       id="phone" name="phone" value="{{ old('phone') }}" placeholder="0___ ___ __ __">
                                 @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             
                             <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">E-posta</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" name="email" value="{{ old('email') }}">
-                                @error('email')
+                                <label for="birth_date" class="form-label">Doğum Tarihi</label>
+                                <input type="date" class="form-control @error('birth_date') is-invalid @enderror" 
+                                       id="birth_date" name="birth_date" value="{{ old('birth_date') }}">
+                                @error('birth_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -126,20 +126,70 @@ document.getElementById('customer_identity_number').addEventListener('input', fu
     }
 });
 
-// Telefon formatlaması
-document.getElementById('phone').addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 0) {
-        if (value.length <= 3) {
-            e.target.value = value;
-        } else if (value.length <= 6) {
-            e.target.value = value.slice(0, 3) + ' ' + value.slice(3);
-        } else if (value.length <= 8) {
-            e.target.value = value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6);
-        } else {
-            e.target.value = value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6, 8) + ' ' + value.slice(8, 10);
-        }
+// TCKN/VKN doğrulama yordamları
+function isValidVKN(vkn){
+    if(!/^\d{10}$/.test(vkn)) return false;
+    const d=vkn.split('').map(n=>parseInt(n,10));
+    const last=d[9];
+    let sum=0;
+    for(let i=0;i<9;i++){
+        const tmp=(d[i]+10-(i+1))%10;
+        if(tmp===9){ sum+=tmp; }
+        else { const mod=(tmp*Math.pow(2,9-i))%9; sum+=mod; }
     }
-});
+    const check=(10-(sum%10))%10;
+    return last===check;
+}
+function isValidTCKN(t){
+    if(!/^\d{11}$/.test(t)) return false;
+    if(!/^[1-9][0-9]{9}[02468]$/.test(t)) return false;
+    const d=t.split('').map(n=>parseInt(n,10));
+    const o=d[0]+d[2]+d[4]+d[6]+d[8];
+    const e=d[1]+d[3]+d[5]+d[7];
+    const c1=(10-((o*3+e)%10))%10;
+    const c2=(10-((((e+c1)*3)+o)%10))%10;
+    return d[9]===c1 && d[10]===c2;
+}
+
+// Telefon formatlaması
+function formatPhoneTR(value) {
+    const raw = (value || '').replace(/\D/g, '');
+    let digits = raw;
+    if (digits.length === 0) return '';
+    if (digits[0] !== '0') digits = '0' + digits;
+    digits = digits.slice(0, 11);
+    if (digits.length <= 1) return digits;
+    if (digits.length <= 4) return digits.slice(0,1) + digits.slice(1);
+    if (digits.length <= 7) return digits.slice(0,1) + digits.slice(1,4) + ' ' + digits.slice(4);
+    if (digits.length <= 9) return digits.slice(0,1) + digits.slice(1,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7);
+    return digits.slice(0,1) + digits.slice(1,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7,9) + ' ' + digits.slice(9,11);
+}
+
+const phoneInput = document.getElementById('phone');
+if (phoneInput) {
+    phoneInput.addEventListener('input', function(e){ e.target.value = formatPhoneTR(e.target.value); });
+    phoneInput.addEventListener('paste', function(e){
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        e.target.value = formatPhoneTR(text);
+    });
+}
+
+// Submit öncesi kimlik doğrulama (format + algoritma)
+const formEl = document.querySelector('form[action*="customers"][method="POST"]');
+if (formEl) {
+    formEl.addEventListener('submit', function(e){
+        const idEl = document.getElementById('customer_identity_number');
+        const v = (idEl && idEl.value || '').trim();
+        if (!v) return;
+        if (v.length===10){
+            if(!/^\d{10}$/.test(v) || !isValidVKN(v)) { e.preventDefault(); alert('Vergi No geçersiz. Lütfen kontrol edin.'); }
+        } else if (v.length===11){
+            if(!/^[1-9][0-9]{9}[02468]$/.test(v) || !isValidTCKN(v)) { e.preventDefault(); alert('TCKN geçersiz. Lütfen kontrol edin.'); }
+        } else {
+            e.preventDefault(); alert('TC için 11 hane, VKN için 10 hane girilmelidir.');
+        }
+    });
+}
 </script>
 @endpush

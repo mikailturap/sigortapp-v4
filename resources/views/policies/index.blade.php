@@ -62,12 +62,32 @@
                         </label>
                         <select class="form-select" id="policy_type" name="policy_type">
                             <option value="">Tüm Türler</option>
-                            <option value="Zorunlu Trafik Sigortası" {{ request('policy_type') == 'Zorunlu Trafik Sigortası' ? 'selected' : '' }}>🚗 Zorunlu Trafik</option>
-                            <option value="Kasko" {{ request('policy_type') == 'Kasko' ? 'selected' : '' }}>🛡️ Kasko</option>
-                            <option value="DASK" {{ request('policy_type') == 'DASK' ? 'selected' : '' }}>🏠 DASK</option>
-                            <option value="Konut Sigortası" {{ request('policy_type') == 'Konut Sigortası' ? 'selected' : '' }}>🏡 Konut</option>
-                            <option value="Sağlık Sigortası" {{ request('policy_type') == 'Sağlık Sigortası' ? 'selected' : '' }}>🏥 Sağlık</option>
-                            <option value="TARSİM" {{ request('policy_type') == 'TARSİM' ? 'selected' : '' }}>🐄 TARSİM</option>
+                            @foreach(\App\Models\PolicyType::active()->ordered()->get() as $policyType)
+                                <option value="{{ $policyType->name }}" {{ request('policy_type') == $policyType->name ? 'selected' : '' }}>
+                                    @switch($policyType->name)
+                                        @case('Zorunlu Trafik Sigortası')
+                                            🚗 {{ $policyType->name }}
+                                            @break
+                                        @case('Kasko')
+                                            🛡️ {{ $policyType->name }}
+                                            @break
+                                        @case('DASK')
+                                            🏠 {{ $policyType->name }}
+                                            @break
+                                        @case('Konut Sigortası')
+                                            🏡 {{ $policyType->name }}
+                                            @break
+                                        @case('Sağlık Sigortası')
+                                            🏥 {{ $policyType->name }}
+                                            @break
+                                        @case('TARSİM')
+                                            🐄 {{ $policyType->name }}
+                                            @break
+                                        @default
+                                            {{ $policyType->name }}
+                                    @endswitch
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-lg-3 col-md-6">
@@ -75,8 +95,14 @@
                             <i data-lucide="building" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
                             Poliçe Şirketi
                         </label>
-                        <input type="text" class="form-control" id="policy_company" name="policy_company" 
-                               value="{{ request('policy_company') }}" placeholder="Şirket adı...">
+                        <select class="form-select" id="policy_company" name="policy_company">
+                            <option value="">Tüm Şirketler</option>
+                            @foreach(\App\Models\InsuranceCompany::active()->ordered()->get() as $company)
+                                <option value="{{ $company->name }}" {{ request('policy_company') == $company->name ? 'selected' : '' }}>
+                                    {{ $company->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label for="status" class="form-label fw-normal text-secondary">
@@ -134,42 +160,7 @@
         </div>
     </div>
 
-    <!-- Notifications Section -->
-    @php
-        $notifications = $policies->where('show_notification', true);
-    @endphp
-    @if($notifications->count() > 0)
-        <div class="alert alert-warning border-0 shadow-sm mb-4" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-exclamation-triangle text-warning me-3 fs-4"></i>
-                <div class="flex-grow-1">
-                    <h6 class="alert-heading fw-bold mb-2">⚠️ Poliçe Uyarıları</h6>
-                    <div class="row g-2">
-                        @foreach($notifications as $policy)
-                            <div class="col-md-6">
-                                <div class="d-flex justify-content-between align-items-center p-2 bg-warning bg-opacity-10 rounded">
-                                    <span class="fw-semibold">
-                                        <i class="far fa-file-alt me-2"></i>
-                                        {{ $policy->policy_number }}
-                                    </span>
-                                    <span class="badge bg-warning text-dark">
-                                        {{ $policy->days_until_expiration }} gün kaldı
-                                    </span>
-                                    <form action="{{ route('policies.dismissNotification', $policy) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="btn btn-sm btn-outline-warning">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
+    
 
     <!-- Main Content Card -->
     <div class="card shadow-sm border-0">
@@ -269,7 +260,7 @@
                             <th class="border-0 d-none">Poliçe No</th>
                             <th class="border-0 d-none">Plaka/Diğer</th>
                             <th class="border-0 d-none">Tanzim Tarihi</th>
-                            <th class="border-0 fw-normal text-secondary">Başlangıç Tarihi</th>
+                            <th class="border-0 fw-normal text-secondary">Bitiş Tarihi</th>
                             <th class="border-0 fw-normal text-secondary">Kalan Gün</th>
                             <th class="border-0 d-none">Bitiş Tarihi</th>
                             <th class="border-0 d-none">Belge Seri/Diğer/UAVT</th>
@@ -327,13 +318,9 @@
                                 <td class="d-none">{{ $policy->policy_number }}</td>
                                 <td class="d-none">{{ $policy->plate_or_other ?: '' }}</td>
                                 <td class="d-none">{{ $policy->issue_date->format('d/m/Y') }}</td>
-                                <!-- Başlangıç Tarihi (Export için sadece başlangıç) -->
-                                <td data-export="{{ $policy->start_date->format('Y-m-d') }}">
+                                <!-- Bitiş Tarihi (siralama ve export için bitiş baz alınır) -->
+                                <td data-export="{{ $policy->end_date->format('Y-m-d') }}" data-order="{{ $policy->end_date->format('Ymd') }}">
                                     <div class="d-flex flex-column">
-                                        <small class="text-success fw-medium">
-                                            <i data-lucide="calendar-check" class="text-success me-1" style="width: 12px; height: 16px;"></i>
-                                            {{ $policy->start_date->format('d/m/Y') }}
-                                        </small>
                                         <small class="text-danger fw-medium">
                                             <i data-lucide="calendar-x" class="text-danger me-1" style="width: 12px; height: 16px;"></i>
                                             {{ $policy->end_date->format('d/m/Y') }}
@@ -491,7 +478,8 @@
                 "pageLength": 100,
                 "lengthMenu": [[25, 50, 100, 200, -1], [25, 50, 100, 200, "Tümü"]],
                 "ordering": true,
-                "order": [[1, 'desc']], // ID sütununa göre sırala
+                // Varsayılan sıralama: Bitiş Tarihi (kolon index 12) artan (en yakın bitiş en üstte)
+                "order": [[12, 'asc']],
                 "info": true,
                 "searching": true,
 
@@ -518,9 +506,9 @@
                     }
                 },
                 "columnDefs": [
-                    { "orderable": false, "targets": [0, 21] }, // Checkbox ve Actions sütunları sıralanamaz
-                    { "className": "text-center", "targets": [0, 1, 20, 21] }, // Checkbox, ID, Durum, Actions
-                    { "visible": false, "targets": [3, 4, 5, 6, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19] }, // Gizli detay sütunları
+                    { "orderable": false, "targets": [0, 21] },
+                    { "className": "text-center", "targets": [0, 1, 20, 21] },
+                    { "visible": false, "targets": [3, 4, 5, 6, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19] },
                     { "searchable": true, "targets": "_all" } // Tüm sütunlarda arama yapılabilir
                 ],
                 "buttons": [

@@ -196,8 +196,6 @@ class PolicyController extends Controller
         return redirect()->route('policies.index')->with('success', 'Poliçe başarıyla oluşturuldu.');
     }
 
-
-
     /**
      * TC/Vergi no ile müşteri kontrolü
      */
@@ -213,7 +211,12 @@ class PolicyController extends Controller
             return response()->json([
                 'success' => true,
                 'exists' => true,
-                'customer' => $customer,
+                'customer' => [
+                    'customer_title' => $customer->customer_title,
+                    'phone' => $customer->phone,
+                    'address' => $customer->address,
+                    'customer_birth_date' => optional($customer->birth_date)->format('Y-m-d'),
+                ],
                 'message' => 'Müşteri bulundu'
             ]);
         }
@@ -252,6 +255,15 @@ class PolicyController extends Controller
                 $updated = true;
             }
             
+            if (isset($data['customer_birth_date'])) {
+                // Doğum tarihi farklıysa güncelle
+                $incomingBirth = $data['customer_birth_date'];
+                if (empty($customer->birth_date) || $customer->birth_date->format('Y-m-d') !== $incomingBirth) {
+                    $customer->birth_date = $incomingBirth;
+                    $updated = true;
+                }
+            }
+            
             if ($updated) {
                 $customer->save();
             }
@@ -265,6 +277,7 @@ class PolicyController extends Controller
             'customer_identity_number' => $data['customer_identity_number'],
             'phone' => $data['customer_phone'] ?? null,
             'email' => null,
+            'birth_date' => $data['customer_birth_date'] ?? null,
             'address' => $data['customer_address'] ?? null,
             'customer_type' => 'bireysel', // Varsayılan
             'risk_level' => 'düşük', // Varsayılan
@@ -460,7 +473,10 @@ class PolicyController extends Controller
             ->orderBy('end_date', 'desc')
             ->get();
 
-        $totalActivePolicies = Policy::where('status', 'aktif')->count();
+        // Takip sayfasının son sekmesinde tüm poliçeler gösterilecek
+        $activePolicies = Policy::orderBy('end_date', 'asc')->get();
+
+        $totalActivePolicies = Policy::count();
 
         $whatsappReminderDays = (int) Setting::get('whatsapp_reminder_days', 7);
         $smsTemplate = (string) Setting::get('sms_template', 'Sayın {customerTitle}, {policyNumber} numaralı poliçenizin bitiş tarihi olan {endDate} yaklaşıyor. Yenileme için bize ulaşabilirsiniz.');
@@ -469,6 +485,7 @@ class PolicyController extends Controller
             'expiringToday' => $expiringToday,
             'upcomingRenewals' => $upcomingRenewals,
             'expiredPolicies' => $expiredPolicies,
+            'activePolicies' => $activePolicies,
             'totalActivePolicies' => $totalActivePolicies,
             'window' => $window,
             'allowedWindows' => $allowedWindows,

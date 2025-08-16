@@ -11,66 +11,104 @@
             </h1>
             <p class="text-muted mb-0 mt-1 small">Müşteri bilgilerini yönetin ve takip edin</p>
         </div>
-        <a href="{{ route('customers.create') }}" class="btn btn-outline-primary">
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">
             <i data-lucide="plus" class="me-2" style="width: 16px; height: 16px;"></i>
             Yeni Müşteri
-        </a>
+        </button>
     </div>
 
     
 
     
 
-    <!-- Modern Filter Section -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white border-0 py-3">
-            <div class="d-flex align-items-center">
-                <i data-lucide="search" class="text-muted me-2" style="width: 18px; height: 18px;"></i>
-                <h5 class="mb-0 fw-normal text-dark">Global Müşteri Arama</h5>
-                <button class="btn btn-link text-decoration-none ms-auto text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false">
-                    <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
-                </button>
+    
+
+    <!-- Yeni Müşteri Modal -->
+    <div class="modal fade" id="newCustomerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Müşteri</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <form id="newCustomerForm" action="{{ route('customers.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div id="customerModalStatus" class="mb-2"></div>
+                        <div class="mb-3">
+                            <label class="form-label">TC/Vergi No <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="modal_identity" name="customer_identity_number" required>
+                                <button class="btn btn-outline-secondary" type="button" id="btnCheckIdentity">
+                                    Kontrol Et
+                                </button>
+                            </div>
+                            <div class="form-text">Önce TC/Vergi No girip kontrol edin. Diğer alanlar kontrol sonrası açılır.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Müşteri Ünvanı <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="modal_title" name="customer_title" required disabled>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Telefon</label>
+                                <input type="text" class="form-control" id="modal_phone" name="phone" placeholder="0___ ___ __ __" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">E-posta</label>
+                                <input type="email" class="form-control" id="modal_email" name="email" disabled>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Adres</label>
+                            <textarea class="form-control" id="modal_address" name="address" rows="2" disabled></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Müşteri Türü <span class="text-danger">*</span></label>
+                            <select class="form-select" id="modal_type" name="customer_type" required disabled>
+                                <option value="">Seçiniz</option>
+                                <option value="bireysel" selected>Bireysel</option>
+                                <option value="kurumsal">Kurumsal</option>
+                            </select>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label">Notlar</label>
+                            <textarea class="form-control" id="modal_notes" name="notes" rows="2" disabled></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+                        <button type="submit" id="btnSaveCustomer" class="btn btn-primary" disabled>Kaydet</button>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="collapse show" id="filterCollapse">
-            <div class="card-body pt-0">
-                <div class="row g-3">
-                    <div class="col-lg-8">
-                        <label for="liveSearch" class="form-label fw-normal text-secondary">
-                            <i data-lucide="search" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
-                            Arama
-                        </label>
-                        <input type="text" id="liveSearch" class="form-control" placeholder="Müşteri adı, TC/Vergi no, telefon, e-posta veya adres ile arama yapın...">
-                    </div>
-                    <div class="col-lg-2">
-                        <label for="typeFilter" class="form-label fw-normal text-secondary">
-                            <i data-lucide="tag" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
-                            Müşteri Türü
-                        </label>
-                        <select id="typeFilter" class="form-select" onchange="filterCustomers()">
-                            <option value="">Tüm Türler</option>
-                            <option value="bireysel">👤 Bireysel</option>
-                            <option value="kurumsal">🏢 Kurumsal</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-2">
-                        <label class="form-label fw-normal text-secondary">&nbsp;</label>
-                        <button type="button" id="clearSearch" class="btn btn-outline-secondary w-100" onclick="clearSearch()">
-                            <i data-lucide="x" class="me-2" style="width: 14px; height: 14px;"></i>Temizle
+    </div>
+    <!-- Müşteri Listesi -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-normal text-dark">
+                    <i data-lucide="users" class="text-muted me-2" style="width: 18px; height: 18px;"></i>
+                    Müşteri Listesi
+                </h5>
+                <div class="d-flex align-items-center">
+                    <a href="{{ route('customers.export') }}" class="btn btn-outline-success btn-sm me-3" title="Excel İndir">
+                        <i data-lucide="download" class="me-1" style="width: 14px; height: 14px;"></i>
+                        Excel İndir
+                    </a>
+                    <label for="liveSearch" class="form-label me-2 mb-0 text-secondary fw-normal">
+                        <i data-lucide="search" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
+                        Arama:
+                    </label>
+                    <div class="input-group input-group-sm" style="width: 350px;">
+                        <input type="text" id="liveSearch" class="form-control" placeholder="Müşteri, TC/Vergi, telefon, e-posta, adres...">
+                        <button class="btn btn-outline-secondary" type="button" id="clearSearch" title="Aramayı Temizle" onclick="clearSearch()">
+                            <i data-lucide="x" style="width: 14px; height: 14px;"></i>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Müşteri Listesi -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-            <h5 class="mb-0 fw-normal text-dark">
-                <i data-lucide="users" class="text-muted me-2" style="width: 18px; height: 18px;"></i>
-                Müşteri Listesi
-            </h5>
         </div>
 
         <div class="table-responsive">
@@ -102,12 +140,24 @@
                             </a>
                         </th>
                         <th class="py-3">
-                            <i data-lucide="shield-check" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
-                            Poliçe Sayısı
+                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'policies_count', 'order' => request('sort') == 'policies_count' && request('order') == 'asc' ? 'desc' : 'asc']) }}"
+                               class="text-decoration-none text-dark d-flex align-items-center justify-content-between fw-normal">
+                                <span>
+                                    <i data-lucide="shield-check" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
+                                    Poliçe Sayısı
+                                </span>
+                                <i data-lucide="arrow-up-down" class="text-muted ms-1" style="width: 14px; height: 14px;"></i>
+                            </a>
                         </th>
                         <th class="py-3">
-                            <i data-lucide="credit-card" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
-                            Bekleyen Ödeme
+                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'total_scheduled', 'order' => request('sort') == 'total_scheduled' && request('order') == 'asc' ? 'desc' : 'asc']) }}"
+                               class="text-decoration-none text-dark d-flex align-items-center justify-content-between fw-normal">
+                                <span>
+                                    <i data-lucide="credit-card" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
+                                    Bekleyen Ödeme
+                                </span>
+                                <i data-lucide="arrow-up-down" class="text-muted ms-1" style="width: 14px; height: 14px;"></i>
+                            </a>
                         </th>
                         <th class="py-3">
                             <i data-lucide="settings" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
@@ -242,6 +292,31 @@
 @push('scripts')
 <script>
 
+// Kimlik doğrulama yardımcıları
+function isValidVKN(vkn){
+    if(!/^\d{10}$/.test(vkn)) return false;
+    const d=vkn.split('').map(n=>parseInt(n,10));
+    const last=d[9];
+    let sum=0;
+    for(let i=0;i<9;i++){
+        const tmp=(d[i]+10-(i+1))%10;
+        if(tmp===9){ sum+=tmp; }
+        else { const mod=(tmp*Math.pow(2,9-i))%9; sum+=mod; }
+    }
+    const check=(10-(sum%10))%10;
+    return last===check;
+}
+function isValidTCKN(t){
+    if(!/^\d{11}$/.test(t)) return false;
+    if(!/^[1-9][0-9]{9}[02468]$/.test(t)) return false;
+    const d=t.split('').map(n=>parseInt(n,10));
+    const o=d[0]+d[2]+d[4]+d[6]+d[8];
+    const e=d[1]+d[3]+d[5]+d[7];
+    const c1=(10-((o*3+e)%10))%10;
+    const c2=(10-((((e+c1)*3)+o)%10))%10;
+    return d[9]===c1 && d[10]===c2;
+}
+
 
 function deleteCustomer(customerId, customerName) {
     if (confirm(`"${customerName}" müşterisini silmek istediğinizden emin misiniz?`)) {
@@ -282,7 +357,8 @@ function exportToPdf() {
 // Live Arama ve Filtreleme Fonksiyonları
 function filterCustomers() {
     const searchTerm = document.getElementById('liveSearch').value.toLowerCase();
-    const typeFilter = document.getElementById('typeFilter').value;
+    const typeFilterEl = document.getElementById('typeFilter');
+    const typeFilter = typeFilterEl ? typeFilterEl.value : '';
     
     const rows = document.querySelectorAll('.customer-row');
     
@@ -318,7 +394,8 @@ function filterCustomers() {
 
 function clearSearch() {
     document.getElementById('liveSearch').value = '';
-    document.getElementById('typeFilter').value = '';
+    const typeFilterEl = document.getElementById('typeFilter');
+    if (typeFilterEl) typeFilterEl.value = '';
     filterCustomers();
 }
 
@@ -336,6 +413,108 @@ document.addEventListener('DOMContentLoaded', function() {
     if (liveSearchInput) {
         liveSearchInput.addEventListener('input', filterCustomers);
         liveSearchInput.addEventListener('keyup', filterCustomers);
+    }
+    // Yeni Müşteri Modal akışı
+    const idEl = document.getElementById('modal_identity');
+    const titleEl = document.getElementById('modal_title');
+    const phoneEl = document.getElementById('modal_phone');
+    const emailEl = document.getElementById('modal_email');
+    const addrEl = document.getElementById('modal_address');
+    const typeEl = document.getElementById('modal_type');
+    const notesEl = document.getElementById('modal_notes');
+    const btnSave = document.getElementById('btnSaveCustomer');
+    const btnCheck = document.getElementById('btnCheckIdentity');
+    const statusDiv = document.getElementById('customerModalStatus');
+
+    function setDisabledAll(disabled) {
+        [titleEl, phoneEl, emailEl, addrEl, typeEl, notesEl, btnSave].forEach(function(el){ if (el) el.disabled = disabled; });
+    }
+    setDisabledAll(true);
+
+    function showStatus(html) { if (statusDiv) statusDiv.innerHTML = html; }
+    function clearStatus() { showStatus(''); }
+
+    function checkIdentity() {
+        clearStatus();
+        // Her yeni kontrol öncesi modal form alanlarını sıfırla
+        if (titleEl) titleEl.value = '';
+        if (phoneEl) phoneEl.value = '';
+        if (emailEl) emailEl.value = '';
+        if (addrEl) addrEl.value = '';
+        if (typeEl) typeEl.value = 'bireysel';
+        setDisabledAll(true);
+        if (idEl) idEl.disabled = false;
+        const identity = (idEl && idEl.value || '').trim();
+        if (!identity) { showStatus('<div class="alert alert-warning py-2">Lütfen TC/Vergi No girin.</div>'); return; }
+        // Önce format ve algoritma doğrulaması
+        if (identity.length===10){
+            if(!/^\d{10}$/.test(identity)) { showStatus('<div class="alert alert-warning py-2">Vergi No formatı geçersiz.</div>'); return; }
+            if(!isValidVKN(identity)) { showStatus('<div class="alert alert-danger py-2">Vergi No algoritma doğrulaması başarısız.</div>'); return; }
+        } else if (identity.length===11){
+            if(!/^[1-9][0-9]{9}[02468]$/.test(identity)) { showStatus('<div class="alert alert-warning py-2">TCKN formatı geçersiz.</div>'); return; }
+            if(!isValidTCKN(identity)) { showStatus('<div class="alert alert-danger py-2">TCKN algoritma doğrulaması başarısız.</div>'); return; }
+        } else {
+            showStatus('<div class="alert alert-warning py-2">TC için 11, VKN için 10 hane giriniz.</div>');
+            return;
+        }
+        fetch('{{ route('customers.check-identity') }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), 'Accept': 'application/json' },
+            body: JSON.stringify({ customer_identity_number: identity })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.success && data.exists) {
+                const c = data.customer || {};
+                if (titleEl) { titleEl.value = c.customer_title || ''; }
+                if (phoneEl) { phoneEl.value = c.phone || ''; }
+                if (emailEl) { emailEl.value = c.email || ''; }
+                if (addrEl) { addrEl.value = c.address || ''; }
+                if (typeEl) { typeEl.value = c.customer_type || 'bireysel'; }
+                setDisabledAll(true);
+                if (idEl) idEl.disabled = false;
+                showStatus('<div class="alert alert-danger py-2">Bu TC/Vergi no ile kayıtlı müşteri var. Yeni kayıt oluşturamazsınız.</div>');
+            } else {
+                setDisabledAll(false);
+                showStatus('<div class="alert alert-info py-2">Bu TC/Vergi no ile müşteri bulunamadı. Yeni müşteri oluşturabilirsiniz.</div>');
+            }
+        })
+        .catch(err => { console.error(err); showStatus('<div class="alert alert-danger py-2">Kimlik kontrolünde hata oluştu.</div>'); });
+    }
+
+    if (btnCheck) btnCheck.addEventListener('click', checkIdentity);
+    if (idEl) {
+        idEl.addEventListener('keypress', function(e){ if (e.key === 'Enter') { e.preventDefault(); checkIdentity(); } });
+        // TC/Vergi yazılırken eski bilgiler kalmasın
+        idEl.addEventListener('input', function(){
+            clearStatus();
+            if (titleEl) titleEl.value = '';
+            if (phoneEl) phoneEl.value = '';
+            if (emailEl) emailEl.value = '';
+            if (addrEl) addrEl.value = '';
+            if (typeEl) typeEl.value = 'bireysel';
+            setDisabledAll(true);
+            idEl.disabled = false;
+        });
+    }
+
+    // Modal telefon otomatik format
+    const modalPhone = document.getElementById('modal_phone');
+    function formatPhoneTR(v){
+        const raw=(v||'').replace(/\D/g,'');
+        let d=raw;
+        if (d.length===0) return '';
+        if (d[0] !== '0') d='0'+d;
+        d=d.slice(0,11);
+        if (d.length<=1) return d;
+        if (d.length<=4) return d.slice(0,1)+d.slice(1);
+        if (d.length<=7) return d.slice(0,1)+d.slice(1,4)+' '+d.slice(4);
+        if (d.length<=9) return d.slice(0,1)+d.slice(1,4)+' '+d.slice(4,7)+' '+d.slice(7);
+        return d.slice(0,1)+d.slice(1,4)+' '+d.slice(4,7)+' '+d.slice(7,9)+' '+d.slice(9,11);
+    }
+    if (modalPhone){
+        modalPhone.addEventListener('input', function(e){ e.target.value = formatPhoneTR(e.target.value); });
+        modalPhone.addEventListener('paste', function(e){ e.preventDefault(); const t=(e.clipboardData||window.clipboardData).getData('text'); e.target.value=formatPhoneTR(t); });
     }
 });
 </script>

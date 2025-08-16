@@ -6,19 +6,34 @@ use App\Models\Customer;
 use App\Models\Policy;
 use App\Models\PaymentSchedule;
 use App\Models\Payment;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CustomersExport;
 
 class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $sortBy = $request->get('sort', 'customer_title');
-        $sortOrder = $request->get('order', 'asc');
+        // Varsayılanı en yeni müşteriler üstte olacak şekilde ayarla
+        $sortBy = $request->get('sort', 'created_at');
+        $sortOrder = $request->get('order', 'desc');
         
         // Sıralama alanlarını kontrol et
-        $allowedSortFields = ['customer_title', 'customer_identity_number', 'phone', 'email', 'customer_type', 'created_at'];
+        $allowedSortFields = [
+            'customer_title',
+            'customer_identity_number',
+            'phone',
+            'email',
+            'customer_type',
+            'created_at',
+            'policies_count',
+            'pending_payments',
+            'total_scheduled',
+            'total_paid'
+        ];
         if (!in_array($sortBy, $allowedSortFields)) {
             $sortBy = 'customer_title';
         }
@@ -27,7 +42,7 @@ class CustomerController extends Controller
         $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
         
         // Basit test query
-        $customers = Customer::query()
+        $customersQuery = Customer::query()
             ->withCount(['policies', 'paymentSchedules as pending_payments' => function($query) {
                 $query->where('status', 'bekliyor');
             }])
@@ -36,9 +51,16 @@ class CustomerController extends Controller
             }], 'amount')
             ->withSum(['payments as total_paid' => function($query) {
                 $query->where('payment_status', 'tamamlandı');
-            }], 'amount')
-            ->orderBy($sortBy, $sortOrder)
-            ->paginate(15);
+            }], 'amount');
+
+        // İlişki sayıları ve toplamları için doğru sıralama
+        if (in_array($sortBy, ['policies_count', 'pending_payments', 'total_scheduled', 'total_paid'])) {
+            $customersQuery->orderBy($sortBy, $sortOrder);
+        } else {
+            $customersQuery->orderBy($sortBy, $sortOrder);
+        }
+
+        $customers = $customersQuery->paginate(15)->withQueryString();
 
         // Debug bilgisi
         Log::info('Customer pagination info', [
@@ -68,6 +90,65 @@ class CustomerController extends Controller
         }
 
         return view('customers.index', compact('customers'));
+    }
+
+    public function export(Request $request)
+    {
+        $customers = Customer::query()
+            ->withCount(['policies', 'paymentSchedules as pending_payments' => function($query) {
+                $query->where('status', 'bekliyor');
+            }])
+            ->withSum(['paymentSchedules as total_scheduled' => function($query) {
+                $query->where('status', 'bekliyor');
+            }], 'amount')
+            ->withSum(['payments as total_paid' => function($query) {
+                $query->where('payment_status', 'tamamlandı');
+            }], 'amount')
+            ->orderBy('customer_title')
+            ->get();
+
+        $rows = [];
+        $rows[] = ['Müşteri Listesi - Detaylı Rapor'];
+        $rows[] = ['Tarih: ' . now()->format('Y-m-d H:i:s')];
+        $rows[] = [];
+        $rows[] = [
+            'ID',
+            'Müşteri Ünvan',
+            'TC/Vergi No',
+            'Telefon',
+            'E-posta',
+            'Adres',
+            'Tür',
+            'Poliçe Sayısı',
+            'Bekleyen Ödeme Adedi',
+            'Bekleyen Ödeme Toplamı',
+            'Toplam Ödenen',
+            'Oluşturulma',
+            'Güncellenme',
+        ];
+
+        foreach ($customers as $c) {
+            $rows[] = [
+                $c->id,
+                $c->customer_title,
+                $c->customer_identity_number,
+                $c->phone,
+                $c->email,
+                $c->address,
+                $c->customer_type,
+                $c->policies_count,
+                $c->pending_payments,
+                number_format((float) ($c->total_scheduled ?? 0), 2, '.', ''),
+                number_format((float) ($c->total_paid ?? 0), 2, '.', ''),
+                optional($c->created_at)->format('Y-m-d H:i:s'),
+                optional($c->updated_at)->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        $prefix = (string) Setting::get('export_prefix', '');
+        $fileName = ($prefix ? $prefix . '_' : '') . 'musteriler_' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new CustomersExport($rows), $fileName);
     }
 
     public function show(Customer $customer)
@@ -108,6 +189,7 @@ class CustomerController extends Controller
             'customer_title' => 'required|string|max:255',
             'customer_identity_number' => 'required|string|max:20|unique:customers',
             'phone' => 'nullable|string|max:20',
+            'birth_date' => 'nullable|date',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
             'customer_type' => 'required|in:bireysel,kurumsal',
@@ -131,6 +213,7 @@ class CustomerController extends Controller
             'customer_title' => 'required|string|max:255',
             'customer_identity_number' => 'required|string|max:20|unique:customers,customer_identity_number,' . $customer->id,
             'phone' => 'nullable|string|max:20',
+            'birth_date' => 'nullable|date',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
             'customer_type' => 'required|in:bireysel,kurumsal',
