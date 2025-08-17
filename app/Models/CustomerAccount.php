@@ -18,8 +18,8 @@ class CustomerAccount extends Model
     ];
 
     protected $casts = [
-        'current_balance' => 'decimal:2',
-        'credit_limit' => 'decimal:2',
+        'current_balance' => 'float',
+        'credit_limit' => 'float',
         'payment_terms_days' => 'integer',
         'days_overdue' => 'integer',
         'last_payment_date' => 'datetime',
@@ -67,12 +67,12 @@ class CustomerAccount extends Model
     // Accessor'lar
     public function getFormattedBalanceAttribute()
     {
-        return number_format($this->current_balance, 2) . ' ₺';
+        return number_format((float) $this->current_balance, 2) . ' ₺';
     }
 
     public function getFormattedCreditLimitAttribute()
     {
-        return number_format($this->credit_limit, 2) . ' ₺';
+        return number_format((float) $this->credit_limit, 2) . ' ₺';
     }
 
     public function getRiskColorAttribute()
@@ -114,9 +114,9 @@ class CustomerAccount extends Model
     public function updateBalance($amount, $type = 'add')
     {
         if ($type === 'add') {
-            $this->current_balance += $amount;
+            $this->current_balance = (string) number_format(((float) $this->current_balance + (float) $amount), 2, '.', '');
         } else {
-            $this->current_balance -= $amount;
+            $this->current_balance = (string) number_format(((float) $this->current_balance - (float) $amount), 2, '.', '');
         }
         
         $this->last_activity_date = now();

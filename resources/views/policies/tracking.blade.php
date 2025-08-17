@@ -104,6 +104,12 @@
         .nav-tabs-line .nav-link .tab-title i {
             margin-bottom: 0 !important;
         }
+
+        /* Müşteri ismi linki hover efekti */
+        h6 a:hover {
+            color: #0d6efd !important;
+            text-decoration: underline !important;
+        }
     </style>
 
     <ul class="nav nav-tabs nav-tabs-line mb-3" id="trackingTabs" role="tablist">
@@ -167,15 +173,14 @@
                     @forelse ($expiringToday as $policy)
                         <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-warning-subtle rounded border" data-status="{{ $policy->status }}">
                             <div class="d-flex flex-column">
-                                <span class="fw-medium text-dark">{{ $policy->customer_title }}</span>
+                                <h6 class="mb-0">
+                                    <a href="{{ route('policies.show', $policy) }}" class="text-decoration-none" title="Poliçe detayını görüntüle">{{ $policy->customer_title }}</a>
+                                </h6>
                                 <small class="text-secondary">{{ $policy->policy_number }} - {{ $policy->policy_type }}</small>
                                 <small class="text-secondary">{{ $policy->customer_phone }}</small>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">Bugün</span>
-                                <a href="{{ route('policies.show', $policy) }}" class="btn btn-sm btn-outline-secondary" title="Detay">
-                                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
-                                </a>
                                 <a href="{{ route('policies.edit', $policy) }}" class="btn btn-sm btn-outline-primary" title="Düzenle">
                                     <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
                                 </a>
@@ -235,7 +240,9 @@
                     @forelse ($upcomingRenewals as $policy)
                         <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-warning-subtle rounded border" data-status="{{ $policy->status }}">
                             <div class="d-flex flex-column">
-                                <span class="fw-medium text-dark">{{ $policy->customer_title }}</span>
+                                <h6 class="mb-0">
+                                    <a href="{{ route('policies.show', $policy) }}" class="text-decoration-none" title="Poliçe detayını görüntüle">{{ $policy->customer_title }}</a>
+                                </h6>
                                 <small class="text-secondary">{{ $policy->policy_number }} - {{ $policy->policy_type }}</small>
                                 <small class="text-secondary">{{ $policy->customer_phone }}</small>
                             </div>
@@ -244,9 +251,6 @@
                             @endphp
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">{{ $daysUntil }} gün kaldı</span>
-                                <a href="{{ route('policies.show', $policy) }}" class="btn btn-sm btn-outline-secondary" title="Detay">
-                                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
-                                </a>
                                 <a href="{{ route('policies.edit', $policy) }}" class="btn btn-sm btn-outline-primary" title="Düzenle">
                                     <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
                                 </a>
@@ -297,12 +301,23 @@
                     @forelse ($expiredPolicies as $policy)
                         <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-danger-subtle rounded border" data-status="{{ $policy->status }}">
                             <div class="d-flex flex-column">
-                                <span class="fw-medium text-dark">{{ $policy->customer_title }}</span>
+                                <h6 class="mb-0">
+                                    <a href="{{ route('policies.show', $policy) }}" class="text-decoration-none" title="Poliçe detayını görüntüle">{{ $policy->customer_title }}</a>
+                                </h6>
                                 <small class="text-secondary">{{ $policy->policy_number }} - {{ $policy->policy_type }}</small>
                                 <small class="text-secondary">{{ $policy->customer_phone }}</small>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis">Süresi Geçti</span>
+                                @php
+                                    $daysLeft = now()->startOfDay()->diffInDays($policy->end_date->startOfDay(), false);
+                                @endphp
+                                @if($daysLeft < 0)
+                                    <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis">Süresi Geçti</span>
+                                @elseif($daysLeft === 0)
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">Bugün</span>
+                                @else
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">{{ $daysLeft }} gün kaldı</span>
+                                @endif
                                 <a href="{{ route('policies.show', $policy) }}" class="btn btn-sm btn-outline-secondary" title="Detay">
                                     <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
                                 </a>
@@ -351,11 +366,31 @@
                     @forelse ($activePolicies as $policy)
                         <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-light rounded border" data-status="{{ $policy->status }}">
                             <div class="d-flex flex-column">
-                                <span class="fw-medium text-dark">{{ $policy->customer_title }}</span>
+                                <h6 class="mb-0">
+                                    <a href="{{ route('policies.show', $policy) }}" class="text-decoration-none" title="Poliçe detayını görüntüle">{{ $policy->customer_title }}</a>
+                                </h6>
                                 <small class="text-secondary">{{ $policy->policy_number }} - {{ $policy->policy_type }}</small>
                                 <small class="text-secondary">{{ $policy->customer_phone }}</small>
                             </div>
                             <div class="d-flex align-items-center gap-2">
+                                @php
+                                    $today = now()->startOfDay();
+                                    $end = $policy->end_date ? $policy->end_date->copy()->startOfDay() : null;
+                                    $daysUntil = $end ? (int) floor(($end->getTimestamp() - $today->getTimestamp()) / 86400) : null;
+                                @endphp
+                                @if($daysUntil !== null)
+                                    @if($daysUntil < 0)
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis">Süresi Geçti</span>
+                                    @elseif($daysUntil === 0)
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">Bugün</span>
+                                    @elseif($daysUntil <= 10)
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">{{ $daysUntil }} gün kaldı</span>
+                                    @elseif($daysUntil <= 30)
+                                        <span class="badge rounded-pill bg-info-subtle text-info-emphasis">{{ $daysUntil }} gün kaldı</span>
+                                    @else
+                                        <span class="badge rounded-pill bg-success-subtle text-success-emphasis">{{ $daysUntil }} gün kaldı</span>
+                                    @endif
+                                @endif
                                 @if($policy->status === 'aktif')
                                     <span class="badge rounded-pill bg-success-subtle text-success-emphasis">Aktif</span>
                                 @else
@@ -387,6 +422,35 @@
     <script>
         (function() {
             function initTracking() {
+                // Aktif sekmeyi yerel depoda tut ve geri yükle
+                (function persistActiveTab() {
+                    var tabs = document.querySelectorAll('#trackingTabs .nav-link');
+                    tabs.forEach(function(tabBtn) {
+                        tabBtn.addEventListener('shown.bs.tab', function(e) {
+                            var target = e.target && e.target.getAttribute('data-bs-target');
+                            if (target) {
+                                localStorage.setItem('tracking_active_tab', target);
+                            }
+                        });
+                    });
+                    // URL'deki tab parametresini temizle (istenmiyor)
+                    try {
+                        var url = new URL(window.location.href);
+                        if (url.searchParams.has('tab')) {
+                            url.searchParams.delete('tab');
+                            window.history.replaceState({}, '', url.toString());
+                        }
+                    } catch(_) {}
+                    // Yalnızca localStorage'dan geri yükle
+                    var savedTab = localStorage.getItem('tracking_active_tab');
+                    if (savedTab) {
+                        var toActivate = document.querySelector('#trackingTabs .nav-link[data-bs-target="' + savedTab + '"]');
+                        if (toActivate && !toActivate.classList.contains('active')) {
+                            toActivate.click();
+                        }
+                    }
+                })();
+
                 // Pasifleri gizle toggle - tracking sayfası
                 var hideInactiveToggle = document.getElementById('toggle-hide-inactive-tracking');
                 if (!hideInactiveToggle) return;
@@ -436,39 +500,90 @@
                 applyHideInactive();
 
                 // AJAX status toggle
-                document.querySelectorAll('form[action*="toggle-status"]').forEach(function(form) {
-                    var input = form.querySelector('input[type="checkbox"]');
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        fetch(form.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value,
-                            },
-                            body: new URLSearchParams(new FormData(form))
-                        }).then(function(res) {
-                            if (!res.ok) throw new Error('İstek başarısız');
-                            // Toast
-                            showToast('Durum güncellendi');
-                            // data-status güncelle
-                            var row = form.closest('[data-status]');
-                            if (row) {
-                                var isActive = input.checked;
-                                row.setAttribute('data-status', isActive ? 'aktif' : 'pasif');
-                                // Aktif sekmesindeyse ve pasife alındıysa gizle
-                                var parent = row.parentElement;
-                                if (parent && parent.id === 'active-list' && !isActive) {
-                                    row.classList.add('d-none');
+                function bindAjaxToggles(context) {
+                    var scope = context || document;
+                    scope.querySelectorAll('form[action*="toggle-status"]').forEach(function(form) {
+                        // Aynı forma birden fazla listener eklenmesini önle
+                        if (form.__boundAjaxToggle) return;
+                        form.__boundAjaxToggle = true;
+                        var input = form.querySelector('input[type="checkbox"]');
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value,
+                                },
+                                body: new URLSearchParams(new FormData(form))
+                            }).then(function(res) {
+                                if (!res.ok) throw new Error('İstek başarısız');
+                                showToast('Durum güncellendi');
+                                var row = form.closest('[data-status]');
+                                if (row) {
+                                    var isActive = input.checked;
+                                    row.setAttribute('data-status', isActive ? 'aktif' : 'pasif');
+                                    var parent = row.parentElement;
+                                    if (parent && parent.id === 'active-list' && !isActive) {
+                                        row.classList.add('d-none');
+                                    }
+                                    applyHideInactive();
                                 }
-                                applyHideInactive();
-                            }
-                        }).catch(function(){
-                            input.checked = !input.checked; // geri al
-                            showToast('Güncelleme başarısız', true);
+                                updateTabBadges();
+                            }).catch(function(){
+                                input.checked = !input.checked;
+                                showToast('Güncelleme başarısız', true);
+                            });
                         });
                     });
-                });
+                }
+                bindAjaxToggles(document);
+
+                // Yaklaşan penceresini AJAX ile güncelle
+                (function bindUpcomingWindowAjax() {
+                    var windowSelect = document.getElementById('window');
+                    if (!windowSelect) return;
+                    var form = windowSelect.closest('form');
+                    if (!form) return;
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        var params = new URLSearchParams(new FormData(form));
+                        var url = new URL(form.action || window.location.href, window.location.origin);
+                        url.search = params.toString();
+                        fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(function(res){ return res.text(); })
+                            .then(function(html){
+                                var parser = new DOMParser();
+                                var doc = parser.parseFromString(html, 'text/html');
+                                var newUpcoming = doc.querySelector('#upcoming-list');
+                                var newBadgeText = doc.querySelector('#badge-upcoming');
+                                var currentUpcoming = document.getElementById('upcoming-list');
+                                var currentBadge = document.getElementById('badge-upcoming');
+                                if (newUpcoming && currentUpcoming) {
+                                    currentUpcoming.innerHTML = newUpcoming.innerHTML;
+                                    // Yeni DOM içindeki toggle formlarına tekrar AJAX bağları
+                                    bindAjaxToggles(currentUpcoming);
+                                    // İkonları yeniden oluştur
+                                    if (window.lucide && typeof lucide.createIcons === 'function') {
+                                        lucide.createIcons();
+                                    }
+                                }
+                                if (newBadgeText && currentBadge) {
+                                    currentBadge.textContent = newBadgeText.textContent;
+                                }
+                                // URL'yi güncelle, tab parametresi olmadan
+                                try {
+                                    var clean = new URL(url.toString());
+                                    clean.searchParams.delete('tab');
+                                    window.history.replaceState({}, '', clean.toString());
+                                } catch(_) {}
+                                applyHideInactive();
+                                updateTabBadges();
+                                showToast('Yaklaşan liste güncellendi');
+                            })
+                            .catch(function(){ showToast('Liste güncellenemedi', true); });
+                    });
+                })();
 
                 // Basit Toast
                 function showToast(message, isError) {

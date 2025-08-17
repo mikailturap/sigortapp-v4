@@ -17,6 +17,13 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
+        // Sayfa başına kayıt seçimi
+        $perPage = (int) $request->get('per_page', 25);
+        $allowedPerPageOptions = [25, 50, 100, 200];
+        if (!in_array($perPage, $allowedPerPageOptions)) {
+            $perPage = 25;
+        }
+
         // Varsayılanı en yeni müşteriler üstte olacak şekilde ayarla
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
@@ -41,7 +48,7 @@ class CustomerController extends Controller
         // Sıralama yönünü kontrol et
         $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
         
-        // Basit test query
+        // Filtreleme mantığı
         $customersQuery = Customer::query()
             ->withCount(['policies', 'paymentSchedules as pending_payments' => function($query) {
                 $query->where('status', 'bekliyor');
@@ -53,6 +60,27 @@ class CustomerController extends Controller
                 $query->where('payment_status', 'tamamlandı');
             }], 'amount');
 
+        // Filtreleme
+        if ($request->filled('customer_title')) {
+            $customersQuery->where('customer_title', 'like', '%' . $request->customer_title . '%');
+        }
+
+        if ($request->filled('customer_identity_number')) {
+            $customersQuery->where('customer_identity_number', 'like', '%' . $request->customer_identity_number . '%');
+        }
+
+        if ($request->filled('phone')) {
+            $customersQuery->where('phone', 'like', '%' . $request->phone . '%');
+        }
+
+        if ($request->filled('email')) {
+            $customersQuery->where('email', 'like', '%' . $request->email . '%');
+        }
+
+        if ($request->filled('customer_type')) {
+            $customersQuery->where('customer_type', $request->customer_type);
+        }
+
         // İlişki sayıları ve toplamları için doğru sıralama
         if (in_array($sortBy, ['policies_count', 'pending_payments', 'total_scheduled', 'total_paid'])) {
             $customersQuery->orderBy($sortBy, $sortOrder);
@@ -60,7 +88,7 @@ class CustomerController extends Controller
             $customersQuery->orderBy($sortBy, $sortOrder);
         }
 
-        $customers = $customersQuery->paginate(15)->withQueryString();
+        $customers = $customersQuery->paginate($perPage)->withQueryString();
 
         // Debug bilgisi
         Log::info('Customer pagination info', [
@@ -89,7 +117,7 @@ class CustomerController extends Controller
             return view('customers.index', compact('simpleCustomers'));
         }
 
-        return view('customers.index', compact('customers'));
+        return view('customers.index', compact('customers', 'perPage', 'allowedPerPageOptions'));
     }
 
     public function export(Request $request)
@@ -230,13 +258,25 @@ class CustomerController extends Controller
     {
         // Müşterinin aktif poliçesi varsa silmeye izin verme
         if ($customer->policies()->where('status', 'aktif')->exists()) {
+            if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aktif poliçesi olan müşteri silinemez.'
+                ], 422);
+            }
             return back()->with('error', 'Aktif poliçesi olan müşteri silinemez.');
         }
 
         $customer->delete();
 
-        return redirect()->route('customers.index')
-            ->with('success', 'Müşteri silindi.');
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Müşteri silindi.'
+            ]);
+        }
+
+        return redirect()->route('customers.index')->with('success', 'Müşteri silindi.');
     }
 
     // Ödeme planı ekleme
@@ -409,9 +449,7 @@ class CustomerController extends Controller
             'email' => $request->email,
             'address' => $request->address,
             'customer_type' => $request->customer_type,
-            'risk_level' => 'düşük', // Varsayılan risk seviyesi
-            'status' => 'aktif',
-            'credit_limit' => 0
+            'status' => 'aktif'
         ]);
 
         return response()->json([

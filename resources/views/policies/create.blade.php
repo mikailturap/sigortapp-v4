@@ -57,6 +57,16 @@
                                     <input type="date" class="form-control" id="customer_birth_date" name="customer_birth_date" value="{{ old('customer_birth_date') }}" required @if(!old('customer_title')) readonly @endif>
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="customer_type" class="form-label">Müşteri Türü</label>
+                                    <select class="form-select" id="customer_type" name="customer_type" required @if(!old('customer_title')) disabled @endif>
+                                        <option value="">Seçiniz</option>
+                                        <option value="bireysel" @selected(old('customer_type') === 'bireysel')>Bireysel</option>
+                                        <option value="kurumsal" @selected(old('customer_type') === 'kurumsal')>Kurumsal</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="customer_address" class="form-label">Adres</label>
@@ -298,6 +308,7 @@ function resetCustomerFieldsBeforeCheck() {
     const phoneEl = document.getElementById('customer_phone');
     const addressEl = document.getElementById('customer_address');
     const birthEl = document.getElementById('customer_birth_date');
+    const typeEl = document.getElementById('customer_type');
 
     [titleEl, phoneEl, addressEl, birthEl].forEach(function(el){
         if (!el) return;
@@ -306,6 +317,7 @@ function resetCustomerFieldsBeforeCheck() {
             el.value = '';
         }
     });
+    if (typeEl) { typeEl.disabled = true; typeEl.value = ''; }
 }
 
 function checkCustomerIdentity() {
@@ -383,6 +395,10 @@ function checkCustomerIdentity() {
                 if (phoneEl) { phoneEl.value = data.customer.phone || ''; phoneEl.readOnly = true; }
                 if (addressEl) { addressEl.value = data.customer.address || ''; addressEl.readOnly = true; }
                 if (birthEl) { birthEl.value = (data.customer.customer_birth_date || '').slice(0,10); birthEl.readOnly = true; }
+                const typeSel = document.getElementById('customer_type');
+                if (typeSel) { typeSel.value = data.customer.customer_type || ''; typeSel.disabled = true; }
+                const typeEl = document.getElementById('customer_type');
+                if (typeEl) { typeEl.value = data.customer.customer_type || ''; typeEl.disabled = true; }
             } else {
                 resultDiv.innerHTML = `
                     <div class="alert alert-info alert-sm">
@@ -399,6 +415,8 @@ function checkCustomerIdentity() {
                 if (phoneEl) phoneEl.readOnly = false;
                 if (addressEl) addressEl.readOnly = false;
                 if (birthEl) birthEl.readOnly = false;
+                const typeEl2 = document.getElementById('customer_type');
+                if (typeEl2) typeEl2.disabled = false;
             }
         } else {
             resultDiv.innerHTML = `

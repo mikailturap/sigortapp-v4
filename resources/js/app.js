@@ -1,4 +1,5 @@
 import './bootstrap';
 
-// Import Bootstrap JS
-import 'bootstrap/dist/js/bootstrap.bundle.js';
+// Import Bootstrap as module and expose globally for inline scripts (e.g., new bootstrap.Modal(...))
+import * as bootstrap from 'bootstrap';
+window.bootstrap = bootstrap;

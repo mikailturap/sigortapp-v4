@@ -37,6 +37,14 @@ class PolicyController extends Controller
             $policies->where('plate_or_other', 'like', '%' . $request->plate_or_other . '%');
         }
 
+        // Müşteriye göre filtreleme
+        if ($request->filled('customer_identity_number')) {
+            $policies->where('customer_identity_number', $request->customer_identity_number);
+        }
+        if ($request->filled('customer_id')) {
+            $policies->where('customer_id', $request->customer_id);
+        }
+
         if ($request->filled('policy_type')) {
             $policies->where('policy_type', $request->policy_type);
         }
@@ -65,8 +73,45 @@ class PolicyController extends Controller
             $policies->where('end_date', '<=', $request->end_date_to);
         }
 
-        // DataTable client-side pagination kullandığı için tüm kayıtları getir
-        $policies = $policies->latest()->get();
+        // Sayfa başına kayıt seçimi
+        $perPage = (int) $request->get('per_page', 25);
+        $allowedPerPageOptions = [25, 50, 100, 200];
+        if (!in_array($perPage, $allowedPerPageOptions)) {
+            $perPage = 25;
+        }
+
+        // Sıralama
+        $sortBy = $request->get('sort', 'end_date');
+        $sortOrder = $request->get('order', 'asc');
+        
+        // Sıralama alanlarını kontrol et
+        $allowedSortFields = [
+            'id',
+            'customer_title',
+            'policy_number',
+            'policy_type',
+            'policy_company',
+            'plate_or_other',
+            'start_date',
+            'end_date',
+            'status',
+            'customer_identity_number',
+            'customer_phone',
+            'issue_date'
+        ];
+        
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'end_date';
+        }
+        
+        // Sıralama yönünü kontrol et
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+
+        // Toplam poliçe sayısını hesapla (filtrelenmemiş)
+        $totalPoliciesCount = Policy::count();
+
+        // Laravel pagination kullan
+        $policies = $policies->orderBy($sortBy, $sortOrder)->paginate($perPage)->withQueryString();
 
         // Bildirim mantığı
         $expirationThresholdDays = (int) Setting::get('notifications_expiration_threshold_days', config('notifications.expiration_threshold_days'));
@@ -89,7 +134,7 @@ class PolicyController extends Controller
             }
         });
 
-        return view('policies.index', compact('policies'));
+        return view('policies.index', compact('policies', 'perPage', 'allowedPerPageOptions', 'totalPoliciesCount'));
     }
 
     /**
@@ -216,6 +261,7 @@ class PolicyController extends Controller
                     'phone' => $customer->phone,
                     'address' => $customer->address,
                     'customer_birth_date' => optional($customer->birth_date)->format('Y-m-d'),
+                    'customer_type' => $customer->customer_type,
                 ],
                 'message' => 'Müşteri bulundu'
             ]);
@@ -263,6 +309,11 @@ class PolicyController extends Controller
                     $updated = true;
                 }
             }
+
+            if (isset($data['customer_type']) && in_array($data['customer_type'], ['bireysel','kurumsal'], true) && $customer->customer_type !== $data['customer_type']) {
+                $customer->customer_type = $data['customer_type'];
+                $updated = true;
+            }
             
             if ($updated) {
                 $customer->save();
@@ -279,10 +330,8 @@ class PolicyController extends Controller
             'email' => null,
             'birth_date' => $data['customer_birth_date'] ?? null,
             'address' => $data['customer_address'] ?? null,
-            'customer_type' => 'bireysel', // Varsayılan
-            'risk_level' => 'düşük', // Varsayılan
-            'status' => 'aktif',
-            'credit_limit' => 0
+            'customer_type' => $data['customer_type'] ?? 'bireysel',
+            'status' => 'aktif'
         ]);
     }
 
@@ -470,7 +519,7 @@ class PolicyController extends Controller
             ->get();
 
         $expiredPolicies = Policy::where('end_date', '<', $today)
-            ->orderBy('end_date', 'desc')
+            ->orderBy('end_date', 'asc')
             ->get();
 
         // Takip sayfasının son sekmesinde tüm poliçeler gösterilecek

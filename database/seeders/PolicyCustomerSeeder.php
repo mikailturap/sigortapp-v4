@@ -41,9 +41,7 @@ class PolicyCustomerSeeder extends Seeder
                     'email' => null,
                     'address' => $policy->customer_address,
                     'customer_type' => 'bireysel', // Varsayılan
-                    'risk_level' => 'düşük', // Varsayılan
-                    'status' => 'aktif',
-                    'credit_limit' => 0
+                    'status' => 'aktif'
                 ]);
 
                 $policy->update(['customer_id' => $newCustomer->id]);

@@ -21,9 +21,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'ahmet.yilmaz@email.com',
                 'address' => 'Atatürk Mah. Cumhuriyet Cad. No:123 İstanbul',
                 'customer_type' => 'bireysel',
-                'risk_level' => 'düşük',
                 'status' => 'aktif',
-                'credit_limit' => 50000.00,
                 'notes' => 'Güvenilir müşteri, düzenli ödemeler'
             ],
             [
@@ -33,9 +31,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'info@abc.com.tr',
                 'address' => 'Levent Mah. Büyükdere Cad. No:456 İstanbul',
                 'customer_type' => 'kurumsal',
-                'risk_level' => 'orta',
                 'status' => 'aktif',
-                'credit_limit' => 200000.00,
                 'notes' => 'Kurumsal müşteri, yıllık sözleşme'
             ],
             [
@@ -45,9 +41,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'fatma.demir@email.com',
                 'address' => 'Kızılay Mah. İstiklal Cad. No:789 Ankara',
                 'customer_type' => 'bireysel',
-                'risk_level' => 'düşük',
                 'status' => 'aktif',
-                'credit_limit' => 30000.00,
                 'notes' => 'Yeni müşteri, ilk poliçe'
             ],
             [
@@ -57,9 +51,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'info@xyzticaret.com',
                 'address' => 'Alsancak Mah. Kıbrıs Şehitleri Cad. No:321 İzmir',
                 'customer_type' => 'kurumsal',
-                'risk_level' => 'yüksek',
                 'status' => 'aktif',
-                'credit_limit' => 150000.00,
                 'notes' => 'Riskli müşteri, sıkı takip gerekli'
             ],
             [
@@ -69,9 +61,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'mehmet.kaya@email.com',
                 'address' => 'Çankaya Mah. Atatürk Bulvarı No:555 Ankara',
                 'customer_type' => 'bireysel',
-                'risk_level' => 'orta',
                 'status' => 'aktif',
-                'credit_limit' => 75000.00,
                 'notes' => 'Orta risk, düzenli takip'
             ],
             [
@@ -81,9 +71,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'info@definsaat.com',
                 'address' => 'Nilüfer Mah. FSM Bulvarı No:888 Bursa',
                 'customer_type' => 'kurumsal',
-                'risk_level' => 'kritik',
                 'status' => 'aktif',
-                'credit_limit' => 500000.00,
                 'notes' => 'Kritik risk, günlük takip gerekli'
             ],
             [
@@ -93,9 +81,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'ayse.ozkan@email.com',
                 'address' => 'Karşıyaka Mah. Atatürk Cad. No:999 Antalya',
                 'customer_type' => 'bireysel',
-                'risk_level' => 'düşük',
                 'status' => 'aktif',
-                'credit_limit' => 25000.00,
                 'notes' => 'Güvenilir müşteri'
             ],
             [
@@ -105,9 +91,7 @@ class CustomerSeeder extends Seeder
                 'email' => 'info@ghiteknoloji.com',
                 'address' => 'Çankaya Mah. Kızılay Cad. No:111 Ankara',
                 'customer_type' => 'kurumsal',
-                'risk_level' => 'düşük',
                 'status' => 'aktif',
-                'credit_limit' => 300000.00,
                 'notes' => 'Teknoloji şirketi, güvenilir'
             ]
         ];

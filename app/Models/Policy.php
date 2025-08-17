@@ -38,18 +38,18 @@ class Policy extends Model
         'sms_reminder_sent_at' => 'datetime',
         'payment_due_date' => 'date',
         'payment_date' => 'date',
-        'policy_premium' => 'decimal:2',
-        'commission_rate' => 'decimal:2',
-        'commission_amount' => 'decimal:2',
-        'net_revenue' => 'decimal:2',
-        'tax_rate' => 'decimal:2',
-        'tax_amount' => 'decimal:2',
-        'total_amount' => 'decimal:2',
-        'policy_cost' => 'decimal:2',
-        'brokerage_fee' => 'decimal:2',
-        'operational_cost' => 'decimal:2',
-        'profit_margin' => 'decimal:2',
-        'customer_balance' => 'decimal:2',
+        'policy_premium' => 'float',
+        'commission_rate' => 'float',
+        'commission_amount' => 'float',
+        'net_revenue' => 'float',
+        'tax_rate' => 'float',
+        'tax_amount' => 'float',
+        'total_amount' => 'float',
+        'policy_cost' => 'float',
+        'brokerage_fee' => 'float',
+        'operational_cost' => 'float',
+        'profit_margin' => 'float',
+        'customer_balance' => 'float',
         'customer_credit_limit' => 'integer',
         'last_payment_reminder' => 'datetime',
     ];
@@ -74,7 +74,7 @@ class Policy extends Model
     public function calculateCommission()
     {
         if ($this->policy_premium && $this->commission_rate) {
-            $this->commission_amount = ($this->policy_premium * $this->commission_rate) / 100;
+            $this->commission_amount = round((float) (($this->policy_premium * $this->commission_rate) / 100), 2);
             $this->save();
         }
         return $this->commission_amount;
@@ -83,7 +83,7 @@ class Policy extends Model
     public function calculateNetRevenue()
     {
         if ($this->policy_premium && $this->commission_amount) {
-            $this->net_revenue = $this->policy_premium - $this->commission_amount;
+            $this->net_revenue = round((float) ($this->policy_premium - $this->commission_amount), 2);
             $this->save();
         }
         return $this->net_revenue;
@@ -92,7 +92,7 @@ class Policy extends Model
     public function calculateTax()
     {
         if ($this->net_revenue && $this->tax_rate) {
-            $this->tax_amount = ($this->net_revenue * $this->tax_rate) / 100;
+            $this->tax_amount = round((float) (($this->net_revenue * $this->tax_rate) / 100), 2);
             $this->save();
         }
         return $this->tax_amount;
@@ -101,7 +101,7 @@ class Policy extends Model
     public function calculateTotalAmount()
     {
         if ($this->net_revenue && $this->tax_amount) {
-            $this->total_amount = $this->net_revenue + $this->tax_amount;
+            $this->total_amount = round((float) ($this->net_revenue + $this->tax_amount), 2);
             $this->save();
         }
         return $this->total_amount;
@@ -153,9 +153,9 @@ class Policy extends Model
     public function updateCustomerBalance()
     {
         if ($this->payment_status === 'ödendi') {
-            $this->customer_balance = 0;
+            $this->customer_balance = 0.0;
         } else {
-            $this->customer_balance = $this->total_amount ?? 0;
+            $this->customer_balance = round((float) ($this->total_amount ?? 0), 2);
         }
         $this->save();
         return $this->customer_balance;

@@ -20,11 +20,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UserSeeder::class,
-            CustomerSeeder::class, // Yeni müşteri sistemi
-            PolicySeeder::class,
-            DashboardPrivacySettingSeeder::class,
             PolicyTypeSeeder::class, // Poliçe türleri
             InsuranceCompanySeeder::class, // Sigorta şirketleri
+            DashboardPrivacySettingSeeder::class,
+            FullDataSeeder::class, // Tam dolu 250 veri
+            // Eski örnek seed'ler devre dışı
+            // CustomerSeeder::class,
+            // PolicySeeder::class,
         ]);
     }
 }

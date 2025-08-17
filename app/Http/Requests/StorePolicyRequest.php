@@ -27,6 +27,7 @@ class StorePolicyRequest extends FormRequest
             'customer_phone' => 'required|string|max:20',
             'customer_birth_date' => 'required|date',
             'customer_address' => 'required|string',
+            'customer_type' => 'required|in:bireysel,kurumsal',
             'insured_name' => 'nullable|string|max:255',
             'insured_phone' => 'nullable|string|max:20',
             'policy_type' => 'required|string|max:255',

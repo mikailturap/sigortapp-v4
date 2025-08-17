@@ -271,7 +271,7 @@ class RevenueController extends Controller
     // Yeni metodlar
     public function customerAccounts()
     {
-        $customers = \App\Models\Customer::with(['policies'])
+        $customers = Customer::with(['policies'])
             ->orderBy('created_at', 'desc')
             ->paginate(25);
 
@@ -280,7 +280,7 @@ class RevenueController extends Controller
 
     public function paymentTransactions()
     {
-        $transactions = \App\Models\Payment::with(['policy', 'customer'])
+        $transactions = Payment::with(['policy', 'customer'])
             ->orderBy('created_at', 'desc')
             ->paginate(25);
 

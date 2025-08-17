@@ -460,7 +460,7 @@ a:hover {
 
 /* Override text colors */
 .text-white {
-    color: #276495 !important;
+    color: #ffffff !important;
 }
 
 /* Override active nav links with Bootstrap classes */
@@ -918,6 +918,14 @@ table.dataTable thead th {
 .badge {
     font-size: 0.75em;
     padding: 0.35em 0.65em;
+}
+
+/* Ensure anchor badges on primary background have white text (override link color rules) */
+a.badge.bg-primary,
+a.badge.bg-primary:visited,
+a.badge.bg-primary:hover,
+a.badge.bg-primary:focus {
+    color: #ffffff !important;
 }
 
 /* Button improvements */

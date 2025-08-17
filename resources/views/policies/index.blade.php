@@ -171,7 +171,7 @@
                         <i data-lucide="list" class="text-muted me-2" style="width: 16px; height: 16px;"></i>
                         Poliçe Listesi
                     </h6>
-                    <span class="badge bg-light text-muted border">{{ $policies->count() }} poliçe</span>
+                    <span class="badge bg-light text-muted border">{{ number_format($totalPoliciesCount) }} poliçe</span>
                 </div>
                 
                 <!-- Excel Export Button -->
@@ -243,32 +243,116 @@
 
             <!-- DataTable Section -->
             <div class="table-responsive">
-                <table id="policies-datatable" class="table table-hover mb-0">
+                <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
                             <th class="border-0 fw-bold" style="width: 50px;">
                                 <i data-lucide="square" class="text-muted" style="width: 16px; height: 16px;"></i>
                             </th>
-                            <th class="border-0 text-center fw-normal text-secondary" style="width: 60px;">#</th>
-                            <th class="border-0 fw-normal text-secondary">Müşteri Ünvan</th>
+                            <th class="border-0 text-center fw-normal text-secondary" style="width: 90px;">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'id', 'order' => request('sort') == 'id' && request('order') == 'asc' ? 'desc' : 'asc']) }}" 
+                                   class="text-decoration-none text-dark d-flex align-items-center justify-content-center">
+                                    Kayıt No
+                                    @if(request('sort') == 'id')
+                                        @if(request('order') == 'asc')
+                                            <i data-lucide="arrow-up" class="text-primary ms-1" style="width: 14px; height: 14px;"></i>
+                                        @else
+                                            <i data-lucide="arrow-down" class="text-primary ms-1" style="width: 14px; height: 14px;"></i>
+                                        @endif
+                                    @else
+                                        <i data-lucide="arrow-up-down" class="text-muted ms-1" style="width: 14px; height: 14px;"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="border-0 fw-normal text-secondary">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'customer_title', 'order' => request('sort') == 'customer_title' && request('order') == 'asc' ? 'desc' : 'asc']) }}" 
+                                   class="text-decoration-none text-dark d-flex align-items-center justify-content-between">
+                                    Müşteri Ünvan
+                                    @if(request('sort') == 'customer_title')
+                                        @if(request('order') == 'asc')
+                                            <i data-lucide="arrow-up" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @else
+                                            <i data-lucide="arrow-down" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @endif
+                                    @else
+                                        <i data-lucide="arrow-up-down" class="text-muted" style="width: 14px; height: 14px;"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="border-0 d-none">TC/Vergi No</th>
                             <th class="border-0 d-none">Müşteri Telefon</th>
                             <th class="border-0 d-none">Doğum Tarihi</th>
                             <th class="border-0 d-none">Adres</th>
-                            <th class="border-0 fw-normal text-secondary">Poliçe Türü</th>
+                            <th class="border-0 fw-normal text-secondary">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'policy_type', 'order' => request('sort') == 'policy_type' && request('order') == 'asc' ? 'desc' : 'asc']) }}" 
+                                   class="text-decoration-none text-dark d-flex align-items-center justify-content-between">
+                                    Poliçe Türü
+                                    @if(request('sort') == 'policy_type')
+                                        @if(request('order') == 'asc')
+                                            <i data-lucide="arrow-up" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @else
+                                            <i data-lucide="arrow-down" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @endif
+                                    @else
+                                        <i data-lucide="arrow-up-down" class="text-muted" style="width: 14px; height: 14px;"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="border-0 d-none">Poliçe Şirketi</th>
                             <th class="border-0 d-none">Poliçe No</th>
                             <th class="border-0 d-none">Plaka/Diğer</th>
                             <th class="border-0 d-none">Tanzim Tarihi</th>
-                            <th class="border-0 fw-normal text-secondary">Bitiş Tarihi</th>
-                            <th class="border-0 fw-normal text-secondary">Kalan Gün</th>
+                            <th class="border-0 fw-normal text-secondary">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'end_date', 'order' => request('sort') == 'end_date' && request('order') == 'asc' ? 'desc' : 'asc']) }}" 
+                                   class="text-decoration-none text-dark d-flex align-items-center justify-content-between">
+                                    Bitiş Tarihi
+                                    @if(request('sort') == 'end_date')
+                                        @if(request('order') == 'asc')
+                                            <i data-lucide="arrow-up" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @else
+                                            <i data-lucide="arrow-down" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @endif
+                                    @else
+                                        <i data-lucide="arrow-up-down" class="text-muted" style="width: 14px; height: 14px;"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="border-0 fw-normal text-secondary">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'end_date', 'order' => request('sort') == 'end_date' && request('order') == 'asc' ? 'desc' : 'asc']) }}" 
+                                   class="text-decoration-none text-dark d-flex align-items-center justify-content-between">
+                                    Kalan Gün
+                                    @if(request('sort') == 'end_date')
+                                        @if(request('order') == 'asc')
+                                            <i data-lucide="arrow-up" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @else
+                                            <i data-lucide="arrow-down" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @endif
+                                    @else
+                                        <i data-lucide="arrow-up-down" class="text-muted" style="width: 14px; height: 14px;"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="border-0 d-none">Bitiş Tarihi</th>
                             <th class="border-0 d-none">Belge Seri/Diğer/UAVT</th>
                             <th class="border-0 d-none">Sigorta Ettiren Ünvan</th>
                             <th class="border-0 d-none">Sigorta Ettiren Telefon</th>
                             <th class="border-0 d-none">TARSİM İşletme No</th>
                             <th class="border-0 d-none">TARSİM Hayvan No</th>
-                            <th class="border-0 fw-normal text-secondary">Durum</th>
+                            <th class="border-0 fw-normal text-secondary">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'status', 'order' => request('sort') == 'status' && request('order') == 'asc' ? 'desc' : 'asc']) }}" 
+                                   class="text-decoration-none text-dark d-flex align-items-center justify-content-between">
+                                    Durum
+                                    @if(request('sort') == 'status')
+                                        @if(request('order') == 'asc')
+                                            <i data-lucide="arrow-up" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @else
+                                            <i data-lucide="arrow-down" class="text-primary" style="width: 14px; height: 14px;"></i>
+                                        @endif
+                                    @else
+                                        <i data-lucide="arrow-up-down" class="text-muted" style="width: 14px; height: 14px;"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="border-0 text-center fw-normal text-secondary" style="width: 120px;">
                                 <i data-lucide="more-horizontal" class="text-muted" style="width: 16px; height: 16px;"></i>
                             </th>
@@ -286,7 +370,9 @@
                                 <!-- Müşteri Ünvan (Export için sadece ünvan) -->
                                 <td data-export="{{ $policy->customer_title }}">
                                     <div class="d-flex flex-column">
-                                        <span class="fw-medium text-dark">{{ $policy->customer_title }}</span>
+                                        <h6 class="mb-0">
+                                            <a href="{{ route('policies.show', $policy) }}" class="text-decoration-none customer-link" title="Poliçe detayını görüntüle">{{ $policy->customer_title }}</a>
+                                        </h6>
                                         <small class="text-secondary fw-medium">
                                             <i data-lucide="credit-card" class="text-muted me-1" style="width: 12px; height: 12px;"></i>
                                             {{ $policy->customer_identity_number }}
@@ -377,9 +463,7 @@
                                         <a href="{{ route('policies.edit', $policy) }}" class="btn btn-sm btn-outline-secondary" title="Düzenle">
                                             <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
                                         </a>
-                                        <a href="{{ route('policies.show', $policy) }}" class="btn btn-sm btn-outline-secondary" title="Detay">
-                                            <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
-                                        </a>
+
                                         <a href="{{ route('policies.downloadPdf', $policy) }}" class="btn btn-sm btn-outline-secondary" title="PDF İndir">
                                             <i data-lucide="download" style="width: 14px; height: 14px;"></i>
                                         </a>
@@ -403,314 +487,54 @@
         </div>
     </div>
 
+    <!-- Pagination -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body py-3">
+            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+                <form method="GET" action="{{ route('policies.index') }}" class="d-inline-flex align-items-center">
+                    @foreach(request()->except(['page', 'per_page']) as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                    <label class="me-2 text-secondary small mb-0">Sayfa başına</label>
+                    <select name="per_page" class="form-select form-select-sm me-2" onchange="this.form.submit()">
+                        @foreach(($allowedPerPageOptions ?? [25,50,100,200]) as $opt)
+                            <option value="{{ $opt }}" {{ (isset($perPage) ? $perPage : ($policies->perPage() ?? 25)) == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                        @endforeach
+                    </select>
+                    <span class="small text-muted">kayıt göster</span>
+                </form>
+                <div class="small text-muted">
+                    @if($policies->total() > 0)
+                        {{ $policies->firstItem() }} - {{ $policies->lastItem() }} / {{ $policies->total() }} kayıt gösteriliyor
+                    @else
+                        0 - 0 / 0 kayıt gösteriliyor
+                    @endif
+                </div>
+                <div>
+                    {{ $policies->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
     <style>
         /* Basit tablo stilleri */
         .table-hover-highlight {
             background-color: rgba(0, 0, 0, 0.05) !important;
         }
+        
+        /* Müşteri ismi linki hover efekti */
+        .customer-link:hover {
+            color: #0d6efd !important;
+            text-decoration: underline !important;
+        }
     </style>
     <script>
-        // jQuery ve DataTable varlık kontrolü
-        function checkLibraries() {
-            console.log('Checking libraries...');
-            console.log('jQuery available:', typeof jQuery !== 'undefined');
-            console.log('$ available:', typeof $ !== 'undefined');
-            console.log('DataTable available:', typeof $.fn !== 'undefined' && typeof $.fn.DataTable !== 'undefined');
-            
-            if (typeof jQuery === 'undefined') {
-                console.error('jQuery not loaded!');
-                return false;
-            }
-            
-            if (typeof $.fn.DataTable === 'undefined') {
-                console.error('DataTable library not loaded!');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // DOM hazır olduğunda çalıştır
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded');
-            
-            // Kütüphaneleri kontrol et
-            if (!checkLibraries()) {
-                console.log('Retrying in 1 second...');
-                setTimeout(function() {
-                    if (checkLibraries()) {
-                        initializeDataTable();
-                    }
-                }, 1000);
-                return;
-            }
-            
-            initializeDataTable();
-        });
-        
         // Global seçili poliçeleri saklamak için dizi
         window.selectedPolicies = window.selectedPolicies || [];
-        
-        // Global table değişkeni
-        window.policiesTable = null;
-        
-        // Lucide ikonlarını yeniden başlatmak için yardımcı fonksiyon
-        function reinitializeIcons() {
-            if (typeof lucide !== 'undefined') {
-                try {
-                    lucide.createIcons();
-                    console.log('Icons reinitialized successfully');
-                } catch (error) {
-                    console.warn('Failed to reinitialize icons:', error);
-                }
-            } else {
-                console.warn('Lucide library not available');
-            }
-        }
-        
-        function initializeDataTable() {
-            console.log('DataTable initialization started...');
-            
-            // Basic DataTable initialization
-            window.policiesTable = $('#policies-datatable').DataTable({
-                "paging": true,
-                "pageLength": 100,
-                "lengthMenu": [[25, 50, 100, 200, -1], [25, 50, 100, 200, "Tümü"]],
-                "ordering": true,
-                // Varsayılan sıralama: Bitiş Tarihi (kolon index 12) artan (en yakın bitiş en üstte)
-                "order": [[12, 'asc']],
-                "info": true,
-                "searching": true,
 
-                "responsive": true,
-                "language": {
-                    "decimal":        "",
-                    "emptyTable":     "Tabloda veri bulunmuyor",
-                    "info":           "_START_ - _END_ / _TOTAL_ kayıt gösteriliyor",
-                    "infoEmpty":      "0 - 0 / 0 kayıt gösteriliyor",
-                    "infoFiltered":   "(_MAX_ kayıt içerisinden filtrelendi)",
-                    "infoPostFix":    "",
-                    "thousands":      ",",
-                    "lengthMenu":     "Sayfa başına _MENU_ kayıt göster",
-                    "loadingRecords": "Yükleniyor...",
-                    "processing":     "İşleniyor...",
-                    "search":         "Tabloda ara:",
-                    "searchPlaceholder": "Arama yapın...",
-                    "zeroRecords":    "Eşleşen kayıt bulunamadı",
-                    "paginate": {
-                        "first":      "İlk",
-                        "last":       "Son",
-                        "next":       "Sonraki",
-                        "previous":   "Önceki"
-                    }
-                },
-                "columnDefs": [
-                    { "orderable": false, "targets": [0, 21] },
-                    { "className": "text-center", "targets": [0, 1, 20, 21] },
-                    { "visible": false, "targets": [3, 4, 5, 6, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19] },
-                    { "searchable": true, "targets": "_all" } // Tüm sütunlarda arama yapılabilir
-                ],
-                "buttons": [
-                    {
-                        extend: 'excel',
-                        text: '<i class="fas fa-file-excel"></i> Excel İndir',
-                        className: 'btn btn-success btn-sm d-none', // Gizli buton, özel butonumuzla tetikleyeceğiz
-                        filename: function() {
-                            var date = new Date();
-                            var isFiltered = window.policiesTable.search() !== '' || 
-                                            window.policiesTable.columns().search().join('') !== '';
-                            var prefix = isFiltered ? 'Poliçeler_Filtrelenmiş_' : 'Poliçeler_Tümü_';
-                            return prefix + date.getFullYear() + '-' + 
-                                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                                   String(date.getDate()).padStart(2, '0');
-                        },
-                        title: 'Poliçe Listesi - Detaylı Rapor',
-                        messageTop: function() {
-                            var date = new Date().toLocaleDateString('tr-TR');
-                            var isFiltered = window.policiesTable.search() !== '' || 
-                                            window.policiesTable.columns().search().join('') !== '';
-                            var status = isFiltered ? 'Filtrelenmiş' : 'Tüm';
-                            return status + ' veriler - Rapor tarihi: ' + date;
-                        },
-                        exportOptions: {
-                            columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], // Manuel olarak tüm data sütunları
-                            modifier: {
-                                search: 'applied',
-                                order: 'applied'
-                            },
-                            format: {
-                                body: function(data, row, column, node) {
-                                    // Eğer data-export attribute'u varsa onu kullan
-                                    var exportValue = $(node).attr('data-export');
-                                    if (exportValue !== undefined) {
-                                        return exportValue;
-                                    }
-                                    
-                                    // HTML etiketlerini temizle ve basitleştir
-                                    var cleanData = data.replace(/<[^>]*>/g, '').trim();
-                                    // Çoklu boşlukları tek boşluk yap
-                                    cleanData = cleanData.replace(/\s+/g, ' ');
-                                    return cleanData;
-                                }
-                            }
-                        }
-                    }
-                ],
-                "dom": '<"row"<"col-sm-12"tr>>' +
-                       '<"row"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-4"i><"col-sm-12 col-md-4"p>>' +
-                       '<"row"<"col-sm-12"B>>',
-                "initComplete": function() {
-                    console.log('DataTable initialization completed');
-                    
-                    // DataTable'ın kendi arama kutusunu gizle
-                    $('.dataTables_filter').hide();
-                    
-                    // Pasifleri gizle toggle'ını kontrol et ve filtreyi uygula
-                    var hideInactive = $('#toggle-hide-inactive').prop('checked');
-                    if (hideInactive) {
-                        console.log('Hide inactive is checked, applying filter...');
-                        this.draw();
-                    }
-                },
-                "drawCallback": function() {
-                    // Her sayfa değişiminde checkbox durumlarını güncelle
-                    updateCheckboxStates();
-                    
-                    // Lucide ikonlarını yeniden başlat (yeni eklenen satırlar için)
-                    reinitializeIcons();
-                }
-            });
-            
-            console.log('DataTable object:', window.policiesTable);
-
-            // Pasifleri gizle filtresi: DataTables custom filter
-            var hideInactiveFilter = function(settings, data, dataIndex, rowData, counter) {
-                try {
-                    // Sadece bizim tabloya uygulansın
-                    if (settings.nTable && settings.nTable.id !== 'policies-datatable') return true;
-
-                    var hideInactive = $('#toggle-hide-inactive').prop('checked');
-                    if (!hideInactive) return true;
-
-                    // Durum sütunu index: 20 (0-based)
-                    // data[20] içinde badge ile 'Aktif' / 'Pasif' yazısı var; metni sadeleştir
-                    var statusHtml = data[20] || '';
-                    var statusText = statusHtml.replace(/<[^>]*>/g, '').toLowerCase();
-                    // 'Pasif' içeriyorsa ve gizleme açık ise satırı gösterme
-                    return statusText.indexOf('pasif') === -1;
-                } catch (e) {
-                    console.warn('Custom filter error:', e);
-                    return true;
-                }
-            };
-
-            // Filter'ı ekle
-            $.fn.dataTable.ext.search.push(hideInactiveFilter);
-
-            // Toggle başlangıç durumunu localStorage'dan yükle
-            var savedHideInactive = localStorage.getItem('policies_hide_inactive');
-            if (savedHideInactive === '1') {
-                $('#toggle-hide-inactive').prop('checked', true);
-                // Sayfa yüklendiğinde filtreyi uygula
-                setTimeout(function() {
-                    window.policiesTable.draw();
-                }, 100);
-            }
-
-            // Toggle değiştikçe yeniden çiz ve değeri kaydet
-            $('#toggle-hide-inactive').on('change', function() {
-                var isChecked = $(this).prop('checked');
-                localStorage.setItem('policies_hide_inactive', isChecked ? '1' : '0');
-                console.log('Toggle changed:', isChecked);
-                // Filtreyi uygula
-                window.policiesTable.draw();
-            });
-
-            // Arama fonksiyonlarını DataTable initialize edildikten sonra bağla
-            if (window.policiesTable) {
-                console.log('Setting up search functionality...');
-                
-                // Custom arama kutusunu DataTable'a bağla - Tüm sütunlarda arama
-                $('#custom-search').on('input', function() {
-                    var searchValue = this.value;
-                    console.log('Searching for:', searchValue);
-                    
-                    try {
-                        // Global search - tüm sütunlarda arama yap
-                        window.policiesTable.search(searchValue).draw();
-                        
-                        // Arama sonuçlarını göster
-                        var info = window.policiesTable.page.info();
-                        console.log('Search results:', info.recordsDisplay, 'of', info.recordsTotal, 'records');
-                    } catch (error) {
-                        console.error('Search error:', error);
-                    }
-                });
-                
-                // Enter tuşu ile arama
-                $('#custom-search').on('keypress', function(e) {
-                    if (e.which === 13) { // Enter tuşu
-                        e.preventDefault();
-                        try {
-                            window.policiesTable.search(this.value).draw();
-                        } catch (error) {
-                            console.error('Enter search error:', error);
-                        }
-                    }
-                });
-                
-                // Arama temizle butonu
-                $('#clear-search').on('click', function() {
-                    try {
-                        $('#custom-search').val('');
-                        window.policiesTable.search('').draw();
-                        $('#custom-search').focus();
-                        console.log('Search cleared');
-                    } catch (error) {
-                        console.error('Clear search error:', error);
-                    }
-                });
-                
-                // DataTable event'lerini bağla
-                window.policiesTable.on('search.dt', function() {
-                    setTimeout(function() {
-                        reinitializeIcons();
-                    }, 100);
-                });
-                
-                console.log('Search functionality setup completed');
-            } else {
-                console.error('DataTable not available for search setup');
-            }
-
-            // Excel Export butonu - Akıllı filtreleme
-            $('#export-excel').on('click', function() {
-                try {
-                    var isFiltered = window.policiesTable.search() !== '' || 
-                                    window.policiesTable.columns().search().join('') !== '';
-                    
-                    console.log('Excel export triggered. Filtered:', isFiltered);
-                    console.log('DataTable object:', window.policiesTable);
-                    
-                    // DataTable'ın Excel export butonunu tetikle
-                    if (window.policiesTable && window.policiesTable.button) {
-                        console.log('Triggering Excel export...');
-                        window.policiesTable.button(0).trigger();
-                    } else {
-                        console.error('DataTable or button method not available');
-                        alert('Excel export için DataTable hazır değil. Lütfen sayfayı yenileyin.');
-                    }
-                } catch (error) {
-                    console.error('Excel export error:', error);
-                    alert('Excel export hatası: ' + error.message);
-                }
-            });
-
-
-            // Global selectedPolicies dizisini kullan
-            var selectedPolicies = window.selectedPolicies;
-
+        document.addEventListener('DOMContentLoaded', function() {
             // Checkbox işlemleri
             $('#select-all-policies').on('change', function() {
                 var isChecked = $(this).prop('checked');
@@ -720,8 +544,8 @@
                     $('input[name="selected_policies[]"]').each(function() {
                         $(this).prop('checked', true);
                         var policyId = $(this).val();
-                        if (selectedPolicies.indexOf(policyId) === -1) {
-                            selectedPolicies.push(policyId);
+                        if (window.selectedPolicies.indexOf(policyId) === -1) {
+                            window.selectedPolicies.push(policyId);
                         }
                     });
                 } else {
@@ -729,9 +553,9 @@
                     $('input[name="selected_policies[]"]').each(function() {
                         $(this).prop('checked', false);
                         var policyId = $(this).val();
-                        var index = selectedPolicies.indexOf(policyId);
+                        var index = window.selectedPolicies.indexOf(policyId);
                         if (index > -1) {
-                            selectedPolicies.splice(index, 1);
+                            window.selectedPolicies.splice(index, 1);
                         }
                     });
                 }
@@ -745,14 +569,14 @@
                 
                 if (isChecked) {
                     // ID'yi diziye ekle
-                    if (selectedPolicies.indexOf(policyId) === -1) {
-                        selectedPolicies.push(policyId);
+                    if (window.selectedPolicies.indexOf(policyId) === -1) {
+                        window.selectedPolicies.push(policyId);
                     }
                 } else {
                     // ID'yi diziden çıkar
-                    var index = selectedPolicies.indexOf(policyId);
+                    var index = window.selectedPolicies.indexOf(policyId);
                     if (index > -1) {
-                        selectedPolicies.splice(index, 1);
+                        window.selectedPolicies.splice(index, 1);
                     }
                 }
                 
@@ -766,25 +590,20 @@
 
             // Form submit olduğunda seçili ID'leri gönder
             $('#bulk-action-form').on('submit', function(e) {
-                console.log('Form submit triggered');
-                console.log('Selected policies:', selectedPolicies);
-                console.log('Selected action:', $('#bulk-action-select').val());
-                
                 // Önce tüm eski hidden input'ları temizle
                 $(this).find('input[name="selected_policies[]"]').remove();
                 
                 // Seçili policy ID'lerini hidden input olarak ekle
-                selectedPolicies.forEach(function(policyId) {
+                window.selectedPolicies.forEach(function(policyId) {
                     $('<input>').attr({
                         type: 'hidden',
                         name: 'selected_policies[]',
                         value: policyId
                     }).appendTo('#bulk-action-form');
-                    console.log('Added hidden input for policy ID:', policyId);
                 });
                 
                 // Eğer hiç seçim yoksa formu durdu
-                if (selectedPolicies.length === 0) {
+                if (window.selectedPolicies.length === 0) {
                     e.preventDefault();
                     alert('Lütfen en az bir poliçe seçin.');
                     return false;
@@ -806,25 +625,122 @@
                     }
                 }
                 
-                console.log('Form submission allowed');
                 return true;
             });
 
-            function updateBulkActionButton() {
-                // Global selectedPolicies dizisini kullan
-                var selectedPolicies = window.selectedPolicies || [];
+            // Policy status toggle with confirmation
+            $(document).on('change', '.policy-status-toggle', function() {
+                const policyId = $(this).data('policy-id');
+                const isChecked = $(this).prop('checked');
+                const newStatus = isChecked ? 'aktif' : 'pasif';
                 
-                const anyChecked = selectedPolicies.length > 0;
-                const actionSelected = $('#bulk-action-select').val() !== '';
+                if (confirm('Bu poliçeyi ' + newStatus + ' yapmak istediğinizden emin misiniz?')) {
+                    const form = $('<form action="{{ url("policies") }}/' + policyId + '/toggle-status" method="POST"></form>');
+                    form.append('{{ csrf_field() }}');
+                    form.append('<input type="hidden" name="_method" value="PATCH">');
+                    $('body').append(form);
+                    form.submit();
+                } else {
+                    // İşlem iptal edildi, checkbox'ı eski haline getir
+                    $(this).prop('checked', !isChecked);
+                }
+            });
+
+            // Pasifleri gizle toggle işlevi 
+            $('#toggle-hide-inactive').on('change', function() {
+                var isChecked = $(this).prop('checked');
+                localStorage.setItem('policies_hide_inactive', isChecked ? '1' : '0');
                 
-                console.log('Updating bulk action button:', {
-                    selectedCount: selectedPolicies.length,
-                    actionSelected: actionSelected,
-                    buttonDisabled: !(anyChecked && actionSelected)
+                $('tr').each(function() {
+                    var statusHtml = $(this).find('td:last-child').prev().html() || '';
+                    var statusText = statusHtml.replace(/<[^>]*>/g, '').toLowerCase();
+                    
+                    if (isChecked && statusText.indexOf('pasif') !== -1) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                    }
+                });
+            });
+
+            // Sayfa yüklendiğinde localStorage'dan toggle durumunu yükle
+            var savedHideInactive = localStorage.getItem('policies_hide_inactive');
+            if (savedHideInactive === '1') {
+                $('#toggle-hide-inactive').prop('checked', true).trigger('change');
+            }
+
+            // Arama işlevi
+            $('#custom-search').on('input', function() {
+                var searchValue = this.value.toLowerCase();
+                var visibleRows = 0;
+                var firstVisible = null;
+                var lastVisible = null;
+                
+                $('tbody tr').each(function(index) {
+                    var rowText = $(this).text().toLowerCase();
+                    if (rowText.indexOf(searchValue) === -1) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                        visibleRows++;
+                        if (firstVisible === null) {
+                            firstVisible = index + 1;
+                        }
+                        lastVisible = index + 1;
+                    }
                 });
                 
+                // Pagination bilgisini güncelle
+                updatePaginationInfo(visibleRows, firstVisible, lastVisible);
+            });
+
+            // Pagination bilgisini güncelleme fonksiyonu
+            function updatePaginationInfo(visibleCount, firstItem, lastItem) {
+                var paginationInfoDiv = $('.small.text-muted').filter(function() {
+                    return $(this).text().includes('kayıt gösteriliyor');
+                });
+                
+                if (visibleCount > 0) {
+                    var newText = firstItem + ' - ' + lastItem + ' / ' + visibleCount + ' kayıt gösteriliyor';
+                } else {
+                    var newText = '0 - 0 / 0 kayıt gösteriliyor';
+                }
+                
+                paginationInfoDiv.text(newText);
+            }
+
+            // Arama temizle
+            $('#clear-search').on('click', function() {
+                $('#custom-search').val('');
+                $('tbody tr').show();
+                $('#custom-search').focus();
+                
+                // Orijinal pagination bilgisini geri yükle
+                restoreOriginalPagination();
+            });
+
+            // Orijinal pagination bilgisini saklama ve geri yükleme
+            var originalPaginationText = '';
+            $(document).ready(function() {
+                var paginationInfoDiv = $('.small.text-muted').filter(function() {
+                    return $(this).text().includes('kayıt gösteriliyor');
+                });
+                originalPaginationText = paginationInfoDiv.text();
+            });
+
+            function restoreOriginalPagination() {
+                var paginationInfoDiv = $('.small.text-muted').filter(function() {
+                    return $(this).text().includes('kayıt gösteriliyor');
+                });
+                paginationInfoDiv.text(originalPaginationText);
+            }
+
+            function updateBulkActionButton() {
+                const anyChecked = window.selectedPolicies.length > 0;
+                const actionSelected = $('#bulk-action-select').val() !== '';
+                
                 $('#bulk-action-button').prop('disabled', !(anyChecked && actionSelected));
-                $('#selected-count').text(selectedPolicies.length + ' poliçe seçildi');
+                $('#selected-count').text(window.selectedPolicies.length + ' poliçe seçildi');
             }
 
             function updateSelectAllCheckbox() {
@@ -840,94 +756,7 @@
                     $('#select-all-policies').prop('indeterminate', true);
                 }
             }
-
-            function updateCheckboxStates() {
-                // selectedPolicies dizisinin tanımlı olduğundan emin ol
-                if (typeof selectedPolicies === 'undefined') {
-                    selectedPolicies = [];
-                }
-                
-                // DataTable sayfa değiştiğinde mevcut seçimleri koru
-                $('input[name="selected_policies[]"]').each(function() {
-                    var policyId = $(this).val();
-                    if (selectedPolicies.indexOf(policyId) !== -1) {
-                        $(this).prop('checked', true);
-                    }
-                });
-                
-                updateSelectAllCheckbox();
-                updateBulkActionButton();
-            }
-
-            // Policy status toggle with confirmation
-            $(document).on('change', '.policy-status-toggle', function() {
-                const policyId = $(this).data('policy-id');
-                const isChecked = $(this).prop('checked');
-                const newStatus = isChecked ? 'aktif' : 'pasif';
-                
-                if (confirm('Bu poliçeyi ' + newStatus + ' yapmak istediğinizden emin misiniz?')) {
-                    const form = $('<form action="{{ url("policies") }}/' + policyId + '/toggle-status" method="POST"></form>');
-                    form.append('{{ csrf_field() }}');
-                    form.append('<input type="hidden" name="_method" value="PATCH">');
-                $('body').append(form);
-                form.submit();
-                } else {
-                    // İşlem iptal edildi, checkbox'ı eski haline getir
-                    $(this).prop('checked', !isChecked);
-                }
-            });
-
-            // DataTable search ve pagination için URL parametrelerini koru
-            window.policiesTable.on('page.dt', function() {
-                var info = window.policiesTable.page.info();
-                var url = new URL(window.location);
-                url.searchParams.set('page', info.page + 1);
-                window.history.pushState({}, '', url);
-                
-                // Sayfa değişiminden sonra ikonları yeniden başlat
-                setTimeout(function() {
-                    reinitializeIcons();
-                }, 100);
-            });
-
-            window.policiesTable.on('search.dt', function() {
-                var search = window.policiesTable.search();
-                var url = new URL(window.location);
-                if (search) {
-                    url.searchParams.set('search', search);
-                } else {
-                    url.searchParams.delete('search');
-                }
-                window.history.pushState({}, '', url);
-            });
-
-            // Responsive table için ek event listener
-            window.policiesTable.on('responsive-display', function() {
-                // Responsive modal açıldığında ek işlemler
-                $('.dtr-modal').addClass('modal-lg');
-            });
-
-            // Table row hover effect
-            $('#policies-datatable tbody').on('mouseenter', 'tr', function() {
-                $(this).addClass('table-hover-highlight');
-            }).on('mouseleave', 'tr', function() {
-                $(this).removeClass('table-hover-highlight');
-            });
-
-            // Sütun sıralama için ek event listener
-            window.policiesTable.on('order.dt', function() {
-                var order = window.policiesTable.order();
-                var url = new URL(window.location);
-                if (order.length > 0) {
-                    url.searchParams.set('order_column', order[0][0]);
-                    url.searchParams.set('order_direction', order[0][1]);
-                } else {
-                    url.searchParams.delete('order_column');
-                    url.searchParams.delete('order_direction');
-                }
-                window.history.pushState({}, '', url);
-            });
-        }
+        });
     </script>
     @endpush
 @endsection

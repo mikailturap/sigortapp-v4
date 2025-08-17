@@ -17,15 +17,12 @@ class Customer extends Model
         'email',
         'birth_date',
         'address',
-        'credit_limit',
-        'risk_level',
         'customer_type',
 
         'notes'
     ];
 
     protected $casts = [
-        'credit_limit' => 'decimal:2',
         'birth_date' => 'date',
     ];
 
@@ -90,14 +87,7 @@ class Customer extends Model
 
 
 
-    public function getCreditUtilizationAttribute()
-    {
-        if ($this->credit_limit <= 0) {
-            return 0;
-        }
-        
-        return min(100, ($this->current_balance / $this->credit_limit) * 100);
-    }
+    // credit_limit alanı kaldırıldı; kredi kullanım oranı hesaplanmıyor
 
 
 

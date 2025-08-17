@@ -98,22 +98,12 @@
                                     <div class="fw-semibold {{ $customer->current_balance > 0 ? 'text-danger' : 'text-success' }}">
                                         {{ $customer->formatted_balance }}
                                     </div>
-                                    @if($customer->current_balance > 0)
-                                        <small class="text-muted">{{ $customer->payment_terms_days }} gün vade</small>
-                                    @endif
                                 </td>
                                 <td>
-                                    <div class="fw-semibold">{{ $customer->formatted_credit_limit }}</div>
-                                    <div class="progress" style="height: 4px;">
-                                        <div class="progress-bar bg-{{ $customer->risk_color }}" 
-                                             style="width: {{ $customer->credit_utilization }}%"></div>
-                                    </div>
-                                    <small class="text-muted">{{ $customer->credit_utilization }}% kullanım</small>
+                                    <span class="text-muted">-</span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-{{ $customer->risk_color }}">
-                                        {{ $customer->risk_text }}
-                                    </span>
+                                    <span class="badge bg-secondary">N/A</span>
                                 </td>
                                 <td>
                                     @if($customer->days_overdue > 0)

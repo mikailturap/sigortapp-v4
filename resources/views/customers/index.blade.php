@@ -11,10 +11,12 @@
             </h1>
             <p class="text-muted mb-0 mt-1 small">Müşteri bilgilerini yönetin ve takip edin</p>
         </div>
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">
-            <i data-lucide="plus" class="me-2" style="width: 16px; height: 16px;"></i>
-            Yeni Müşteri
-        </button>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">
+                <i data-lucide="plus" class="me-2" style="width: 16px; height: 16px;"></i>
+                Yeni Müşteri
+            </button>
+        </div>
     </div>
 
     
@@ -175,14 +177,11 @@
                             data-address="{{ strtolower($customer->address ?? '') }}"
                             data-type="{{ $customer->customer_type }}">
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
-                                        <i class="fa-solid fa-user text-white"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0">{{ $customer->customer_title }}</h6>
-                                        <small class="text-muted">{{ $customer->customer_type }}</small>
-                                    </div>
+                                <div>
+                                    <h6 class="mb-0">
+                                        <a href="{{ route('customers.show', $customer) }}" class="text-decoration-none">{{ $customer->customer_title }}</a>
+                                    </h6>
+                                    <small class="text-muted">{{ $customer->customer_type }}</small>
                                 </div>
                             </td>
                             <td>
@@ -191,7 +190,12 @@
                             <td>
                                 <div>
                                     @if($customer->phone)
-                                        <div><i class="fa-solid fa-phone me-1 text-muted"></i>{{ $customer->phone }}</div>
+                                        <div>
+                                            <i class="fa-solid fa-phone me-1 text-muted"></i>
+                                            <a href="tel:{{ $customer->phone }}" class="text-decoration-none">
+                                                {{ $customer->phone }}
+                                            </a>
+                                        </div>
                                     @endif
                                     @if($customer->email)
                                         <div><i class="fa-solid fa-envelope me-1 text-muted"></i>{{ $customer->email }}</div>
@@ -199,30 +203,26 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="badge bg-primary">{{ $customer->policies_count }}</span>
+                                <a href="{{ route('policies.index', ['customer_identity_number' => $customer->customer_identity_number]) }}" class="badge bg-primary text-decoration-none" title="Bu müşterinin poliçelerini gör" style="color: #ffffff !important;">
+                                    {{ $customer->policies_count }}
+                                </a>
                             </td>
                             <td>
-                                @if($customer->pending_payments > 0)
-                                    <span class="badge bg-warning">{{ $customer->pending_payments }}</span>
-                                    <br><small class="text-muted">₺{{ number_format($customer->total_scheduled, 2) }}</small>
+                                @if($customer->total_scheduled > 0)
+                                    <span class="text-dark fw-semibold">₺{{ number_format($customer->total_scheduled, 2) }}</span>
                                 @else
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
 
                             <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('customers.show', $customer) }}" 
-                                       class="btn btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <a href="{{ route('customers.edit', $customer) }}" class="btn btn-sm btn-outline-secondary" title="Düzenle">
+                                        <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
                                     </a>
-                                    <a href="{{ route('customers.edit', $customer) }}" 
-                                       class="btn btn-outline-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-outline-danger" 
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" title="Sil"
                                             onclick="deleteCustomer('{{ $customer->id }}', '{{ $customer->customer_title }}')">
-                                        <i class="fas fa-trash"></i>
+                                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
                                     </button>
                                 </div>
                             </td>
@@ -243,22 +243,33 @@
     </div>
 
     <!-- Pagination -->
-    @if($customers->hasPages())
-        <div class="card shadow-sm border-0 mt-4">
-            <div class="card-body py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="text-muted small">
-                        <i data-lucide="info" class="text-muted me-1" style="width: 14px; height: 14px;"></i>
-                        Toplam {{ $customers->total() }} müşteri, {{ $customers->currentPage() }}. sayfa
-                        (Sayfa başına {{ $customers->perPage() }} kayıt)
-                    </div>
-                    <div>
-                        {{ $customers->links() }}
-                    </div>
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body py-3">
+            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+                <form method="GET" action="{{ route('customers.index') }}" class="d-inline-flex align-items-center">
+                    <input type="hidden" name="sort" value="{{ request('sort', 'created_at') }}">
+                    <input type="hidden" name="order" value="{{ request('order', 'desc') }}">
+                    <label class="me-2 text-secondary small mb-0">Sayfa başına</label>
+                    <select name="per_page" class="form-select form-select-sm me-2" onchange="this.form.submit()">
+                        @foreach(($allowedPerPageOptions ?? [25,50,100,200]) as $opt)
+                            <option value="{{ $opt }}" {{ (isset($perPage) ? $perPage : ($customers->perPage() ?? 25)) == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                        @endforeach
+                    </select>
+                    <span class="small text-muted">kayıt göster</span>
+                </form>
+                <div class="small text-muted">
+                    @if($customers->total() > 0)
+                        {{ $customers->firstItem() }} - {{ $customers->lastItem() }} / {{ $customers->total() }} kayıt gösteriliyor
+                    @else
+                        0 - 0 / 0 kayıt gösteriliyor
+                    @endif
+                </div>
+                <div>
+                    {{ $customers->links() }}
                 </div>
             </div>
         </div>
-    @endif
+    </div>
 @endsection
 
 @push('styles')
@@ -286,11 +297,82 @@
     opacity: 1;
     color: #0d6efd !important;
 }
+
+
 </style>
 @endpush
 
 @push('scripts')
 <script>
+// Live Arama ve Filtreleme Fonksiyonları
+function filterCustomers() {
+    const searchTerm = document.getElementById('liveSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('.customer-row');
+    let visibleRows = 0;
+    let firstVisible = null;
+    let lastVisible = null;
+    
+    rows.forEach((row, index) => {
+        const title = row.getAttribute('data-title');
+        const identity = row.getAttribute('data-identity');
+        const phone = row.getAttribute('data-phone');
+        const email = row.getAttribute('data-email');
+        const address = row.getAttribute('data-address');
+        
+        // Arama filtresi
+        const matchesSearch = !searchTerm || 
+            title.includes(searchTerm) || 
+            identity.includes(searchTerm) || 
+            phone.includes(searchTerm) || 
+            email.includes(searchTerm) || 
+            address.includes(searchTerm);
+        
+        if (matchesSearch) {
+            row.style.display = '';
+            visibleRows++;
+            if (firstVisible === null) {
+                firstVisible = index + 1;
+            }
+            lastVisible = index + 1;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Pagination bilgisini güncelle
+    updateCustomerPaginationInfo(visibleRows, firstVisible, lastVisible);
+}
+
+// Pagination bilgisini güncelleme fonksiyonu
+function updateCustomerPaginationInfo(visibleCount, firstItem, lastItem) {
+    const paginationInfoDiv = document.querySelector('.small.text-muted');
+    
+    if (paginationInfoDiv && paginationInfoDiv.textContent.includes('kayıt gösteriliyor')) {
+        let newText;
+        if (visibleCount > 0) {
+            newText = firstItem + ' - ' + lastItem + ' / ' + visibleCount + ' kayıt gösteriliyor';
+        } else {
+            newText = '0 - 0 / 0 kayıt gösteriliyor';
+        }
+        paginationInfoDiv.textContent = newText;
+    }
+}
+
+// Orijinal pagination bilgisini saklama
+let originalCustomerPaginationText = '';
+document.addEventListener('DOMContentLoaded', function() {
+    const paginationInfoDiv = document.querySelector('.small.text-muted');
+    if (paginationInfoDiv && paginationInfoDiv.textContent.includes('kayıt gösteriliyor')) {
+        originalCustomerPaginationText = paginationInfoDiv.textContent;
+    }
+});
+
+function restoreOriginalCustomerPagination() {
+    const paginationInfoDiv = document.querySelector('.small.text-muted');
+    if (paginationInfoDiv && originalCustomerPaginationText) {
+        paginationInfoDiv.textContent = originalCustomerPaginationText;
+    }
+}
 
 // Kimlik doğrulama yardımcıları
 function isValidVKN(vkn){
@@ -322,21 +404,41 @@ function deleteCustomer(customerId, customerName) {
     if (confirm(`"${customerName}" müşterisini silmek istediğinizden emin misiniz?`)) {
         // CSRF token'ı al
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
-        // DELETE request gönder
-        fetch(`/customers/${customerId}`, {
-            method: 'DELETE',
+
+        // Laravel uyumlu method spoofing ile POST kullan (DELETE bazı ortamlarda engellenebilir)
+        const url = `/customers/${customerId}`;
+        const body = new URLSearchParams();
+        body.append('_method', 'DELETE');
+
+        fetch(url, {
+            method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': token,
-                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Accept': 'application/json',
             },
+            body: body.toString(),
+            redirect: 'follow'
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
+        .then(async (response) => {
+            const contentType = response.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                const data = await response.json();
+                if (response.ok && data && data.success) {
+                    location.reload();
+                } else {
+                    alert('Müşteri silinirken bir hata oluştu' + (data && data.message ? `: ${data.message}` : '.'));
+                }
             } else {
-                alert('Müşteri silinirken bir hata oluştu: ' + data.message);
+                // JSON değilse (muhtemelen redirect edilen HTML), başarılı kabul edip sayfayı yenile
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    const text = await response.text();
+                    console.error('Silme yanıtı:', text);
+                    alert('Müşteri silinirken bir hata oluştu.');
+                }
             }
         })
         .catch(error => {
@@ -354,57 +456,14 @@ function exportToPdf() {
     alert('PDF export özelliği yakında eklenecek');
 }
 
-// Live Arama ve Filtreleme Fonksiyonları
-function filterCustomers() {
-    const searchTerm = document.getElementById('liveSearch').value.toLowerCase();
-    const typeFilterEl = document.getElementById('typeFilter');
-    const typeFilter = typeFilterEl ? typeFilterEl.value : '';
-    
-    const rows = document.querySelectorAll('.customer-row');
-    
-    rows.forEach(row => {
-        const title = row.getAttribute('data-title');
-        const identity = row.getAttribute('data-identity');
-        const phone = row.getAttribute('data-phone');
-        const email = row.getAttribute('data-email');
-        const address = row.getAttribute('data-address');
-        const type = row.getAttribute('data-type');
-        
-        // Arama filtresi
-        const matchesSearch = !searchTerm || 
-            title.includes(searchTerm) || 
-            identity.includes(searchTerm) || 
-            phone.includes(searchTerm) || 
-            email.includes(searchTerm) || 
-            address.includes(searchTerm);
-        
-        // Tür filtresi
-        const matchesType = !typeFilter || type === typeFilter;
-        
-        // Tüm filtreleri geçiyorsa göster
-        if (matchesSearch && matchesType) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-    
-    updateResultsCount();
-}
-
 function clearSearch() {
     document.getElementById('liveSearch').value = '';
-    const typeFilterEl = document.getElementById('typeFilter');
-    if (typeFilterEl) typeFilterEl.value = '';
-    filterCustomers();
-}
-
-function updateResultsCount() {
-    const visibleRows = document.querySelectorAll('.customer-row:not([style*="display: none"])');
-    const totalRows = document.querySelectorAll('.customer-row').length;
-    
-    // Sonuç sayısını güncelle (opsiyonel)
-    console.log(`Gösterilen: ${visibleRows.length} / Toplam: ${totalRows}`);
+    const rows = document.querySelectorAll('.customer-row');
+    rows.forEach(row => {
+        row.style.display = '';
+    });
+    // Orijinal pagination bilgisini geri yükle
+    restoreOriginalCustomerPagination();
 }
 
 // Live arama için event listener

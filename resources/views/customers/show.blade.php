@@ -42,9 +42,14 @@
                             <td><strong>Telefon:</strong></td>
                             <td>
                                 @if($customer->phone)
-                                    <a href="tel:{{ $customer->phone }}" class="text-decoration-none">
-                                        {{ $customer->phone }}
-                                    </a>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <a href="tel:{{ $customer->phone }}" class="text-decoration-none">
+                                            <i class="fas fa-phone me-1"></i>{{ $customer->phone }}
+                                        </a>
+                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $customer->phone) }}?text=Merhaba {{ $customer->customer_title }}, size nasıl yardımcı olabilirim?" target="_blank" class="btn btn-success btn-sm">
+                                            <i class="fab fa-whatsapp me-1"></i>WhatsApp
+                                        </a>
+                                    </div>
                                 @else
                                     <span class="text-muted">-</span>
                                 @endif
