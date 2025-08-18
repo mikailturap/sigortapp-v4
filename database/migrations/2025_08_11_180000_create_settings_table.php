@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Migrasyonları çalıştır.
+     */
     public function up(): void
     {
         Schema::create('settings', function (Blueprint $table) {
@@ -16,6 +19,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Migrasyonları geri al.
+     */
     public function down(): void
     {
         Schema::dropIfExists('settings');

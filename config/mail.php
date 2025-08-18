@@ -4,13 +4,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Mailer
+    | Varsayılan Postacı
     |--------------------------------------------------------------------------
     |
-    | This option controls the default mailer that is used to send all email
-    | messages unless another mailer is explicitly specified when sending
-    | the message. All additional mailers can be configured within the
-    | "mailers" array. Examples of each type of mailer are provided.
+    | Bu seçenek, mesaj gönderirken başka bir postacı açıkça
+    | belirtilmediği sürece tüm e-posta mesajlarını göndermek
+    | için kullanılan varsayılan postacıyı kontrol eder. Tüm
+    | ek postacılar "mailers" dizisi içinde yapılandırılabilir.
+    | Her tür postacı için örnekler sağlanmıştır.
     |
     */
 
@@ -18,18 +19,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mailer Configurations
+    | Postacı Yapılandırmaları
     |--------------------------------------------------------------------------
     |
-    | Here you may configure all of the mailers used by your application plus
-    | their respective settings. Several examples have been configured for
-    | you and you are free to add your own as your application requires.
+    | Burada uygulamanız tarafından kullanılan tüm postacıları ve
+    | ilgili ayarlarını yapılandırabilirsiniz. Sizin için birkaç
+    | örnek yapılandırılmıştır ve uygulamanız gerektirdiği gibi
+    | kendi örneklerinizi eklemekte özgürsünüz.
     |
-    | Laravel supports a variety of mail "transport" drivers that can be used
-    | when delivering an email. You may specify which one you're using for
-    | your mailers below. You may also add additional mailers if needed.
+    | Laravel, e-posta teslim ederken kullanılabilecek çeşitli
+    | posta "transport" sürücülerini destekler. Aşağıda hangi
+    | sürücüyü kullandığınızı belirtebilirsiniz. Gerekirse
+    | ek postacılar da ekleyebilirsiniz.
     |
-    | Supported: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
+    | Desteklenen: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
     |            "postmark", "resend", "log", "array",
     |            "failover", "roundrobin"
     |

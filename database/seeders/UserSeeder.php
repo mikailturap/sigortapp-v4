@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class UserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Veritabanı seed'lerini çalıştır.
      */
     public function run(): void
     {

@@ -24,12 +24,12 @@ class StorePolicyRequest extends FormRequest
         return [
             'customer_title' => 'required|string|max:255',
             'customer_identity_number' => 'required|string|max:20',
-            'customer_phone' => 'required|string|max:20',
+            'customer_phone' => ['required','string','max:20','regex:/^0\d{3} \d{3} \d{2} \d{2}$/'],
             'customer_birth_date' => 'required|date',
             'customer_address' => 'required|string',
             'customer_type' => 'required|in:bireysel,kurumsal',
             'insured_name' => 'nullable|string|max:255',
-            'insured_phone' => 'nullable|string|max:20',
+            'insured_phone' => ['nullable','string','max:20','regex:/^0\d{3} \d{3} \d{2} \d{2}$/'],
             'policy_type' => 'required|string|max:255',
             'policy_company' => 'nullable|string|max:255',
             'policy_number' => 'required|string|max:255|unique:policies,policy_number',
@@ -47,6 +47,23 @@ class StorePolicyRequest extends FormRequest
             'payment_notes' => 'nullable|string',
             'invoice_number' => 'nullable|string|max:255',
             'tax_rate' => 'nullable|numeric|min:0|max:100',
+            // Dosyalar
+            'files' => 'nullable|array|max:4',
+            'files.*' => 'file|max:5120|mimes:pdf,csv,xlsx,xls,doc,docx,jpg,jpeg,png,rar',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'customer_phone.regex' => 'Müşteri Telefonu formatı geçersiz. Örnek: 0XXX XXX XX XX',
+            'insured_phone.regex' => 'Sigorta Ettiren Telefon formatı geçersiz. Örnek: 0XXX XXX XX XX',
+            'end_date.after_or_equal' => 'Bitiş Tarihi, Başlangıç Tarihinden sonra veya eşit olmalıdır.',
         ];
     }
 }

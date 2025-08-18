@@ -6,12 +6,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Cache Store
+    | Varsayılan Önbellek Deposu
     |--------------------------------------------------------------------------
     |
-    | This option controls the default cache store that will be used by the
-    | framework. This connection is utilized if another isn't explicitly
-    | specified when running a cache operation inside the application.
+    | Bu seçenek, çerçeve tarafından kullanılacak varsayılan önbellek
+    | deposunu kontrol eder. Bu bağlantı, uygulama içinde bir önbellek
+    | işlemi çalıştırırken başka bir bağlantı açıkça belirtilmediğinde kullanılır.
     |
     */
 
@@ -19,14 +19,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Stores
+    | Önbellek Deposları
     |--------------------------------------------------------------------------
     |
-    | Here you may define all of the cache "stores" for your application as
-    | well as their drivers. You may even define multiple stores for the
-    | same cache driver to group types of items stored in your caches.
+    | Burada uygulamanız için tüm önbellek "depolarını" ve sürücülerini
+    | tanımlayabilirsiniz. Aynı önbellek sürücüsü için birden fazla
+    | depo tanımlayarak önbelleklerinizde saklanan öğe türlerini
+    | gruplandırabilirsiniz.
     |
-    | Supported drivers: "array", "database", "file", "memcached",
+    | Desteklenen sürücüler: "array", "database", "file", "memcached",
     |                    "redis", "dynamodb", "octane", "null"
     |
     */
@@ -94,12 +95,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Key Prefix
+    | Önbellek Anahtarı Öneki
     |--------------------------------------------------------------------------
     |
-    | When utilizing the APC, database, memcached, Redis, and DynamoDB cache
-    | stores, there might be other applications using the same cache. For
-    | that reason, you may prefix every cache key to avoid collisions.
+    | APC, veritabanı, memcached, Redis ve DynamoDB önbellekleri kullanırken
+    | aynı önbelleği kullanan diğer uygulamalar olabilir. Bu yüzden
+    | çarpışmaları önlemek için her önbellek anahtarına öneki ekleyebilirsiniz.
     |
     */
 

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomersExport;
+use App\Rules\ValidIdentityNumber;
 
 class CustomerController extends Controller
 {
@@ -24,8 +25,8 @@ class CustomerController extends Controller
             $perPage = 25;
         }
 
-        // Varsayılanı en yeni müşteriler üstte olacak şekilde ayarla
-        $sortBy = $request->get('sort', 'created_at');
+        // Varsayılanı en son güncellenen müşteriler üstte olacak şekilde ayarla
+        $sortBy = $request->get('sort', 'updated_at');
         $sortOrder = $request->get('order', 'desc');
         
         // Sıralama alanlarını kontrol et
@@ -39,14 +40,15 @@ class CustomerController extends Controller
             'policies_count',
             'pending_payments',
             'total_scheduled',
-            'total_paid'
+            'total_paid',
+            'updated_at'
         ];
         if (!in_array($sortBy, $allowedSortFields)) {
-            $sortBy = 'customer_title';
+            $sortBy = 'updated_at';
         }
         
         // Sıralama yönünü kontrol et
-        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
         
         // Filtreleme mantığı
         $customersQuery = Customer::query()
@@ -215,13 +217,17 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'customer_title' => 'required|string|max:255',
-            'customer_identity_number' => 'required|string|max:20|unique:customers',
-            'phone' => 'nullable|string|max:20',
+            'customer_identity_number' => ['required','string','max:20','unique:customers', new ValidIdentityNumber()],
+            'phone' => ['nullable','string','max:20','regex:/^0\d{3} \d{3} \d{2} \d{2}$/'],
             'birth_date' => 'nullable|date',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
             'customer_type' => 'required|in:bireysel,kurumsal',
             'notes' => 'nullable|string'
+        ], [
+            'phone.regex' => 'Telefon formatı geçersiz. Örnek: 0XXX XXX XX XX',
+        ], [
+            'phone' => 'Telefon',
         ]);
 
         $customer = Customer::create($validated);
@@ -239,16 +245,44 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'customer_title' => 'required|string|max:255',
-            'customer_identity_number' => 'required|string|max:20|unique:customers,customer_identity_number,' . $customer->id,
-            'phone' => 'nullable|string|max:20',
+            'customer_identity_number' => ['required','string','max:20','unique:customers,customer_identity_number,' . $customer->id, new ValidIdentityNumber()],
+            'phone' => ['nullable','string','max:20','regex:/^0\d{3} \d{3} \d{2} \d{2}$/'],
             'birth_date' => 'nullable|date',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
             'customer_type' => 'required|in:bireysel,kurumsal',
             'notes' => 'nullable|string'
+        ], [
+            'phone.regex' => 'Telefon formatı geçersiz. Örnek: 0XXX XXX XX XX',
+        ], [
+            'phone' => 'Telefon',
         ]);
 
+        // Eski kimlik no'yu yakala (kimlik no değişmişse eşleştirme için kullanacağız)
+        $originalIdentityNumber = $customer->customer_identity_number;
+
         $customer->update($validated);
+
+        // İlgili tüm poliçelerde müşteri bilgilerini güncelle (null gelen alanları güncellemeyelim)
+        $policyUpdateData = [
+            'customer_title' => $customer->customer_title,
+            'customer_identity_number' => $customer->customer_identity_number,
+        ];
+        if (!is_null($customer->phone)) {
+            $policyUpdateData['customer_phone'] = $customer->phone;
+        }
+        if (!is_null($customer->birth_date)) {
+            $policyUpdateData['customer_birth_date'] = $customer->birth_date;
+        }
+        if (!is_null($customer->address)) {
+            $policyUpdateData['customer_address'] = $customer->address;
+        }
+
+        Policy::where(function($q) use ($customer, $originalIdentityNumber) {
+                $q->where('customer_id', $customer->id)
+                  ->orWhere('customer_identity_number', $originalIdentityNumber);
+            })
+            ->update($policyUpdateData);
 
         return redirect()->route('customers.show', $customer)
             ->with('success', 'Müşteri bilgileri güncellendi.');

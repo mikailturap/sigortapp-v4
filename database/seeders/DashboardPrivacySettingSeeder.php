@@ -9,7 +9,7 @@ use App\Models\DashboardPrivacySetting;
 class DashboardPrivacySettingSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Veritabanı seed'lerini çalıştır.
      */
     public function run(): void
     {

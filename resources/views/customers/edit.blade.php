@@ -53,7 +53,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="phone" class="form-label">Telefon</label>
                                 <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                       id="phone" name="phone" value="{{ old('phone', $customer->phone) }}" placeholder="0___ ___ __ __">
+                                       id="phone" name="phone" value="{{ old('phone', $customer->phone) }}" placeholder="0XXX XXX XX XX">
                                 @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -117,32 +117,39 @@
 
 @push('scripts')
 <script>
-// TC/Vergi no formatlaması
-document.getElementById('customer_identity_number').addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length <= 10) {
-        // TC Kimlik No formatı: 12345678901
+// TC/Vergi no giriş kısıtlama ve basit doğrulama
+(function(){
+    const input = document.getElementById('customer_identity_number');
+    if (!input) return;
+    input.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        // Maksimum 11 hane
+        if (value.length > 11) value = value.slice(0, 11);
         e.target.value = value;
-    } else if (value.length <= 11) {
-        // Vergi No formatı: 1234567890
-        e.target.value = value;
-    }
-});
+    });
+})();
 
-// Telefon formatlaması
-document.getElementById('phone').addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 0) {
-        if (value.length <= 3) {
-            e.target.value = value;
-        } else if (value.length <= 6) {
-            e.target.value = value.slice(0, 3) + ' ' + value.slice(3);
-        } else if (value.length <= 8) {
-            e.target.value = value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6);
-        } else {
-            e.target.value = value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6, 8) + ' ' + value.slice(8, 10);
-        }
+// Telefonu 0XXX XXX XX XX formatına zorla
+(function(){
+    const el = document.getElementById('phone');
+    if (!el) return;
+    function fmt(v){
+        let s = (v||'').replace(/\D/g,'').slice(0,11);
+        if (!s) return '';
+        if (s[0] !== '0') s = '0' + s.slice(0,10);
+        const first = s.slice(0,4);
+        const mid = s.slice(4,7);
+        const part3 = s.slice(7,9);
+        const part4 = s.slice(9,11);
+        let out = first;
+        if (mid) out += ' ' + mid;
+        if (part3) out += ' ' + part3;
+        if (part4) out += ' ' + part4;
+        return out;
     }
-});
+    el.addEventListener('input', e=>{ e.target.value = fmt(e.target.value); });
+    el.addEventListener('paste', e=>{ e.preventDefault(); e.target.value = fmt((e.clipboardData||window.clipboardData).getData('text')); });
+    if (el.value) el.value = fmt(el.value);
+})();
 </script>
 @endpush

@@ -9,12 +9,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Log Channel
+    | Varsayılan Log Kanalı
     |--------------------------------------------------------------------------
     |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
+    | Bu seçenek, mesajları loglarınıza yazmak için kullanılan varsayılan
+    | log kanalını tanımlar. Burada sağlanan değer, aşağıda yapılandırılan
+    | "kanallar" listesindeki kanallardan biriyle eşleşmelidir.
     |
     */
 
@@ -22,12 +22,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Deprecations Log Channel
+    | Kullanımdan Kaldırma Log Kanalı
     |--------------------------------------------------------------------------
     |
-    | This option controls the log channel that should be used to log warnings
-    | regarding deprecated PHP and library features. This allows you to get
-    | your application ready for upcoming major versions of dependencies.
+    | Bu seçenek, kullanımdan kaldırılan PHP ve kütüphane özellikleri
+    | hakkındaki uyarıları loglamak için kullanılması gereken log
+    | kanalını kontrol eder. Bu, uygulamanızı bağımlılıkların
+    | gelecekteki ana sürümlerine hazırlamanızı sağlar.
     |
     */
 
@@ -38,14 +39,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Log Channels
+    | Log Kanalları
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the log channels for your application. Laravel
-    | utilizes the Monolog PHP logging library, which includes a variety
-    | of powerful log handlers and formatters that you're free to use.
+    | Burada uygulamanız için log kanallarını yapılandırabilirsiniz. Laravel,
+    | çeşitli güçlü log işleyicileri ve formatlayıcıları içeren Monolog
+    | PHP loglama kütüphanesini kullanır, bunları kullanmakta özgürsünüz.
     |
-    | Available drivers: "single", "daily", "slack", "syslog",
+    | Mevcut sürücüler: "single", "daily", "slack", "syslog",
     |                    "errorlog", "monolog", "custom", "stack"
     |
     */

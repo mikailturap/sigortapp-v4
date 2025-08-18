@@ -17,7 +17,7 @@
         </a>
     </div>
 
-    <form action="{{ route('policies.update', $policy) }}" method="POST">
+    <form action="{{ route('policies.update', $policy) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="row">
@@ -32,31 +32,31 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="customer_title" class="form-label fw-normal text-secondary">Müşteri Ünvan</label>
-                            <input type="text" class="form-control" id="customer_title" name="customer_title" value="{{ old('customer_title', $policy->customer_title) }}" required>
+                            <input type="text" class="form-control" id="customer_title" value="{{ $policy->customer_title }}" readonly disabled>
                         </div>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="customer_identity_number" class="form-label fw-normal text-secondary">TC/Vergi No</label>
-                                    <input type="text" class="form-control" id="customer_identity_number" name="customer_identity_number" value="{{ old('customer_identity_number', $policy->customer_identity_number) }}" required>
+                                    <input type="text" class="form-control" id="customer_identity_number" value="{{ $policy->customer_identity_number }}" readonly disabled>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="customer_phone" class="form-label fw-normal text-secondary">Müşteri Telefon</label>
-                                    <input type="text" class="form-control" id="customer_phone" name="customer_phone" value="{{ old('customer_phone', $policy->customer_phone) }}" required>
+                                    <input type="text" class="form-control" id="customer_phone" value="{{ $policy->customer_phone }}" readonly disabled>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="customer_birth_date" class="form-label fw-normal text-secondary">Doğum Tarihi</label>
-                                    <input type="date" class="form-control" id="customer_birth_date" name="customer_birth_date" value="{{ old('customer_birth_date', $policy->customer_birth_date ? $policy->customer_birth_date->format('Y-m-d') : '') }}" required>
+                                    <input type="date" class="form-control" id="customer_birth_date" value="{{ $policy->customer_birth_date ? $policy->customer_birth_date->format('Y-m-d') : '' }}" readonly disabled>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="customer_address" class="form-label fw-normal text-secondary">Adres</label>
-                            <textarea class="form-control" id="customer_address" name="customer_address" rows="3" required>{{ old('customer_address', $policy->customer_address) }}</textarea>
+                            <textarea class="form-control" id="customer_address" rows="3" readonly disabled>{{ $policy->customer_address }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="insured_phone" class="form-label fw-normal text-secondary">Sigorta Ettiren Telefon</label>
-                            <input type="text" class="form-control" id="insured_phone" name="insured_phone" value="{{ old('insured_phone', $policy->insured_phone) }}">
+                            <input type="text" class="form-control" id="insured_phone" name="insured_phone" placeholder="0XXX XXX XX XX" value="{{ old('insured_phone', $policy->insured_phone) }}">
                         </div>
                     </div>
                 </div>
@@ -184,6 +184,44 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card shadow-sm border-0 mt-4">
+                    <div class="card-header bg-white border-0 py-3">
+                        <div class="d-flex align-items-center">
+                            <i data-lucide="paperclip" class="text-muted me-2" style="width: 18px; height: 18px;"></i>
+                            <h5 class="mb-0 fw-normal text-dark">Dosyalar</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2 text-muted small">Yeni dosya ekleyebilirsiniz (toplamda en fazla 4 dosya, her biri 5 MB). Mevcut dosyalar aşağıda listelenir.</div>
+                        <input type="file" name="files[]" id="files_input" class="form-control mb-3" multiple accept=".pdf,.csv,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png,.rar">
+                        <ul id="selected_files_list" class="list-group"></ul>
+
+                        @if($policy->files && $policy->files->count())
+                            <ul class="list-group existing-files-list">
+                                @foreach($policy->files as $file)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i data-lucide="file" class="text-muted" style="width: 16px; height: 16px;"></i>
+                                            <span>{{ $file->original_name }}</span>
+                                            <small class="text-muted">({{ number_format(($file->size ?? 0) / 1024, 1) }} KB)</small>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a class="btn btn-sm btn-outline-secondary" target="_blank" href="{{ route('policies.files.preview', [$policy, $file]) }}">Önizle</a>
+                                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('policies.files.download', [$policy, $file]) }}">İndir</a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger delete-file-btn" 
+                                                data-policy-id="{{ $policy->id }}" 
+                                                data-file-id="{{ $file->id }}"
+                                                data-csrf-token="{{ csrf_token() }}">Sil</button>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <div class="text-muted">Bu poliçe için dosya yok.</div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -200,4 +238,135 @@
     </form>
 @endsection
 
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sigorta ettiren telefon formatı 0XXX XXX XX XX
+    (function(){
+        const el = document.getElementById('insured_phone');
+        if (!el) return;
+        function fmt(v){
+            let s = (v||'').replace(/\D/g,'').slice(0,11);
+            if (!s) return '';
+            if (s[0] !== '0') s = '0' + s.slice(0,10);
+            const first = s.slice(0,4);
+            const mid = s.slice(4,7);
+            const part3 = s.slice(7,9);
+            const part4 = s.slice(9,11);
+            let out = first;
+            if (mid) out += ' ' + mid;
+            if (part3) out += ' ' + part3;
+            if (part4) out += ' ' + part4;
+            return out;
+        }
+        el.addEventListener('input', e=>{ e.target.value = fmt(e.target.value); });
+        el.addEventListener('paste', e=>{ e.preventDefault(); e.target.value = fmt((e.clipboardData||window.clipboardData).getData('text')); });
+        if (el.value) el.value = fmt(el.value);
+    })();
+    // Yeni dosya seçim UI (listele + kaldır)
+    const fileInput = document.getElementById('files_input');
+    const listEl = document.getElementById('selected_files_list');
+    const maxTotal = 4;
+    const existingCount = {{ (int) ($policy->files->count() ?? 0) }};
+    let selectedFiles = [];
+
+    function syncInputFiles() {
+        if (!fileInput) return;
+        const dt = new DataTransfer();
+        selectedFiles.forEach(f => dt.items.add(f));
+        fileInput.files = dt.files;
+    }
+
+    function renderSelectedList() {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        if (selectedFiles.length === 0) return;
+        selectedFiles.forEach((file, idx) => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            const left = document.createElement('div');
+            left.className = 'd-flex align-items-center gap-2';
+            left.innerHTML = '<i data-lucide="file" class="text-muted" style="width:16px;height:16px;"></i>'
+                + '<span>' + file.name + '</span>'
+                + '<small class="text-muted">(' + (file.size/1024).toFixed(1) + ' KB)</small>';
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-sm btn-outline-danger';
+            removeBtn.textContent = 'Kaldır';
+            removeBtn.addEventListener('click', function(){
+                selectedFiles.splice(idx, 1);
+                syncInputFiles();
+                renderSelectedList();
+            });
+            li.appendChild(left);
+            li.appendChild(removeBtn);
+            listEl.appendChild(li);
+        });
+        if (window.lucide) { window.lucide.createIcons(); }
+    }
+
+    if (fileInput && listEl) {
+        fileInput.addEventListener('change', function(){
+            const incoming = Array.from(fileInput.files || []);
+            for (const file of incoming) {
+                if ((existingCount + selectedFiles.length) >= maxTotal) {
+                    alert('Toplamda en fazla 4 dosya yükleyebilirsiniz. Mevcut dosyalarla birlikte sınır aşıldı.');
+                    break;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(file.name + ' dosyası çok büyük. Maksimum 5MB olmalıdır.');
+                    continue;
+                }
+                selectedFiles.push(file);
+            }
+            syncInputFiles();
+            renderSelectedList();
+        });
+    }
+
+    // Dosya silme butonları
+    const deleteButtons = document.querySelectorAll('.delete-file-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (!confirm('Bu dosyayı silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+            
+            const policyId = this.dataset.policyId;
+            const fileId = this.dataset.fileId;
+            const csrfToken = this.dataset.csrfToken;
+            
+            fetch(`/policies/${policyId}/files/${fileId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Dosya listesinden kaldır
+                    this.closest('li').remove();
+                    
+                    // Liste boş kaldıysa mesaj göster
+                    const filesList = document.querySelector('.existing-files-list');
+                    if (filesList && filesList.children.length === 0) {
+                        filesList.innerHTML = '<div class="text-muted">Bu poliçe için dosya yok.</div>';
+                    }
+                } else {
+                    alert('Dosya silinirken hata oluştu: ' + (data.message || 'Bilinmeyen hata'));
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Dosya silinirken hata oluştu.');
+            });
+        });
+    });
+});
+</script>
+@endpush
 

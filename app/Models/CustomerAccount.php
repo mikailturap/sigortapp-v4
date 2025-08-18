@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CustomerAccount extends Model
 {
@@ -31,6 +32,12 @@ class CustomerAccount extends Model
     public function policies(): HasMany
     {
         return $this->hasMany(Policy::class, 'customer_identity_number', 'customer_identity_number');
+    }
+
+    public function customer(): BelongsTo
+    {
+        // Tercihen customer_id üzerinden, geriye dönük uyum için kimlik no da tutuluyor
+        return $this->belongsTo(Customer::class);
     }
 
     public function paymentTransactions(): HasMany

@@ -3,11 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\App;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Uygulama servislerini kaydet.
      */
     public function register(): void
     {
@@ -15,13 +16,14 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Uygulama servislerini başlat.
      */
     public function boot(): void
     {
-        // Pagination konfigürasyonu
+        // Sayfalama konfigürasyonu
         \Illuminate\Pagination\Paginator::useBootstrap();
-        
-        // You can configure queue/scheduler in console kernel if present.
+
+        // Uygulama yerelini zorla Türkçe yap (env yanlışsa bile)
+        App::setLocale(config('app.locale', 'tr'));
     }
 }

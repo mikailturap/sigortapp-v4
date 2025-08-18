@@ -24,7 +24,7 @@ class SendPolicySmsReminder implements ShouldQueue
 
     public function handle(): void
     {
-        // Guard conditions
+        // Guard koşulları
         if ((Setting::get('sms_enabled', '0') !== '1')) {
             return;
         }
@@ -32,7 +32,7 @@ class SendPolicySmsReminder implements ShouldQueue
             return;
         }
 
-        // Prepare message
+        // Mesajı hazırla
         $template = Setting::get('sms_template', 'Sayın {customerTitle}, {policyNumber} numaralı poliçenizin bitiş tarihi olan {endDate} yaklaşıyor. Yenileme için bize ulaşabilirsiniz.');
         $message = str_replace([
             '{customerTitle}', '{policyNumber}', '{endDate}'
@@ -42,14 +42,14 @@ class SendPolicySmsReminder implements ShouldQueue
             optional($this->policy->end_date)->format('Y-m-d')
         ], $template);
 
-        // TODO: Integrate real SMS provider here (Netgsm/Twilio). For now, just log.
-        Log::info('SMS reminder would be sent', [
+        // TODO: Burada gerçek SMS sağlayıcısını entegre et (Netgsm/Twilio). Şimdilik sadece log.
+        Log::info('SMS hatırlatıcısı gönderilecekti', [
             'to' => $this->policy->customer_phone,
             'message' => $message,
             'policy_id' => $this->policy->id,
         ]);
 
-        // Mark as sent
+        // Gönderildi olarak işaretle
         $this->policy->forceFill(['sms_reminder_sent_at' => now()])->save();
     }
 }

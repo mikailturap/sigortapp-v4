@@ -31,7 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('insurance-companies-api/active', [InsuranceCompanyController::class, 'getActive'])->name('insurance-companies.active');
     });
 
-    // Dashboard Privacy API
+    // Dashboard Gizlilik API'si
     Route::get('/api/dashboard-privacy-settings', [App\Http\Controllers\Api\DashboardPrivacyController::class, 'getSettings']);
 
     // Müşteri Yönetimi - Spesifik route'lar önce gelmeli
@@ -45,8 +45,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('customers/{customer}/payment-schedule/{schedule}', [CustomerController::class, 'deletePaymentSchedule'])->name('customers.payment-schedule.delete');
     Route::resource('customers', CustomerController::class);
 
-    // Policy routes
-    Route::resource('policies', PolicyController::class);
+    // Poliçe dosya route'ları, uygun eşleşme için kısıtlama ile
+    Route::get('policies/{policy}/files/{file}/download', [PolicyController::class, 'downloadFile'])
+        ->where(['policy' => '[0-9]+', 'file' => '[0-9]+'])
+        ->name('policies.files.download');
+    Route::get('policies/{policy}/files/{file}/preview', [PolicyController::class, 'previewFile'])
+        ->where(['policy' => '[0-9]+', 'file' => '[0-9]+'])
+        ->name('policies.files.preview');
+    Route::delete('policies/{policy}/files/{file}', [PolicyController::class, 'deleteFile'])
+        ->where(['policy' => '[0-9]+', 'file' => '[0-9]+'])
+        ->name('policies.files.delete');
+    
+    // Poliçe kaynak route'ları (çakışmaları önlemek için destroy hariç)
+    Route::resource('policies', PolicyController::class)->except(['destroy']);
+    // Poliçe destroy route'u dosya route'larından sonra gelir
+    Route::delete('policies/{policy}', [PolicyController::class, 'destroy'])->name('policies.destroy');
     Route::post('/policies/check-customer-identity', [PolicyController::class, 'checkCustomerByIdentity'])->name('policies.check-customer-identity');
     Route::patch('policies/{policy}/toggle-status', [PolicyController::class, 'toggleStatus'])->name('policies.toggleStatus');
     Route::post('policies/bulk-actions', [PolicyController::class, 'bulkActions'])->name('policies.bulkActions');

@@ -1,0 +1,38 @@
+{
+  "Pagination Navigation": "Sayfalama Gezintisi",
+  "Showing": "Gösteriliyor",
+  "to": "-",
+  "of": "/",
+  "results": "kayıt",
+  "Go to page :page": ":page. sayfaya git",
+
+  "Profile": "Profil",
+  "Profile Information": "Profil Bilgileri",
+  "Update your account's profile information and email address.": "Hesabınızın profil bilgilerini ve e-posta adresini güncelleyin.",
+  "Name": "Ad Soyad",
+  "Email": "E-posta",
+  "Your email address is unverified.": "E-posta adresiniz doğrulanmamış.",
+  "Click here to re-send the verification email.": "Doğrulama e-postasını tekrar göndermek için buraya tıklayın.",
+  "A new verification link has been sent to your email address.": "E-posta adresinize yeni bir doğrulama bağlantısı gönderildi.",
+  "Save": "Kaydet",
+  "Saved.": "Kaydedildi.",
+
+  "Update Password": "Şifreyi Güncelle",
+  "Ensure your account is using a long, random password to stay secure.": "Hesabınızın güvenliği için uzun ve rastgele bir şifre kullanın.",
+  "Current Password": "Mevcut Şifre",
+  "New Password": "Yeni Şifre",
+  "Confirm Password": "Şifreyi Doğrula",
+
+  "Delete Account": "Hesabı Sil",
+  "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.": "Hesabınız silindiğinde tüm kaynaklar ve veriler kalıcı olarak silinir. Silmeden önce saklamak istediğiniz verileri indirmenizi öneririz.",
+  "Are you sure you want to delete your account?": "Hesabınızı silmek istediğinizden emin misiniz?",
+  "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.": "Hesabınız silindiğinde tüm kaynaklar ve veriler kalıcı olarak silinir. Lütfen kalıcı olarak silmek istediğinizi onaylamak için şifrenizi girin.",
+  "Password": "Şifre",
+  "Cancel": "Vazgeç",
+
+  "Resend Verification Email": "Doğrulama E-postasını Tekrar Gönder",
+  "Log Out": "Çıkış Yap",
+
+  "Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.": "Kayıt olduğunuz için teşekkürler! Başlamadan önce, az önce e-postayla gönderdiğimiz bağlantıya tıklayarak e-posta adresinizi doğrular mısınız? E-postayı almadıysanız, memnuniyetle yenisini gönderebiliriz.",
+  "A new verification link has been sent to the email address you provided during registration.": "Kayıt sırasında verdiğiniz e-posta adresine yeni bir doğrulama bağlantısı gönderildi."
+}

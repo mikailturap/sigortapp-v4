@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Customer extends Model
 {
@@ -40,6 +41,12 @@ class Customer extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function account(): HasOne
+    {
+        // Geçiş sürecinde kimlik numarası üzerinden ilişki kuruyoruz
+        return $this->hasOne(CustomerAccount::class, 'customer_identity_number', 'customer_identity_number');
     }
 
     // Accessor'lar

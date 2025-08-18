@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class PolicyCustomerSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Veritabanı seed'lerini çalıştır.
      */
     public function run(): void
     {

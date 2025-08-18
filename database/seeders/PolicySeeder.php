@@ -10,7 +10,7 @@ use Faker\Factory as Faker;
 class PolicySeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Veritabanı seed'lerini çalıştır.
      */
     public function run(): void
     {

@@ -9,7 +9,7 @@ use Illuminate\Database\Seeder;
 class PolicyTypeSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Veritabanı seed'lerini çalıştır.
      */
     public function run(): void
     {

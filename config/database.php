@@ -6,13 +6,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Database Connection Name
+    | Varsayılan Veritabanı Bağlantı Adı
     |--------------------------------------------------------------------------
     |
-    | Here you may specify which of the database connections below you wish
-    | to use as your default connection for database operations. This is
-    | the connection which will be utilized unless another connection
-    | is explicitly specified when you execute a query / statement.
+    | Burada, veritabanı işlemleri için varsayılan bağlantı olarak
+    | aşağıdaki veritabanı bağlantılarından hangisini kullanmak
+    | istediğinizi belirtebilirsiniz. Bu, bir sorgu / ifade
+    | çalıştırırken başka bir bağlantı açıkça belirtilmediği
+    | sürece kullanılacak bağlantıdır.
     |
     */
 
@@ -20,12 +21,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Database Connections
+    | Veritabanı Bağlantıları
     |--------------------------------------------------------------------------
     |
-    | Below are all of the database connections defined for your application.
-    | An example configuration is provided for each database system which
-    | is supported by Laravel. You're free to add / remove connections.
+    | Aşağıda uygulamanız için tanımlanan tüm veritabanı bağlantıları bulunmaktadır.
+    | Laravel tarafından desteklenen her veritabanı sistemi için
+    | örnek bir yapılandırma sağlanmıştır. Bağlantı eklemek / kaldırmakta özgürsünüz.
     |
     */
 

@@ -79,6 +79,31 @@
         </div>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-header">Dosyalar</div>
+        <div class="card-body">
+            @if($policy->files && $policy->files->count())
+                <ul class="list-group">
+                    @foreach($policy->files as $file)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <i data-lucide="file" class="text-muted" style="width: 16px; height: 16px;"></i>
+                                <span>{{ $file->original_name }}</span>
+                                <small class="text-muted">({{ number_format(($file->size ?? 0) / 1024, 1) }} KB)</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-sm btn-outline-secondary" target="_blank" href="{{ route('policies.files.preview', [$policy, $file]) }}">Önizle</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="{{ route('policies.files.download', [$policy, $file]) }}">İndir</a>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <div class="text-muted">Bu poliçe için dosya yok.</div>
+            @endif
+        </div>
+    </div>
+
     <div class="d-flex justify-content-end mt-4">
         <a href="{{ route('policies.edit', $policy) }}" class="btn btn-sm btn-outline-secondary me-2">
             <i data-lucide="edit-3" class="me-1" style="width: 14px; height: 14px;"></i>Düzenle

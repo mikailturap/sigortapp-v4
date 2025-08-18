@@ -23,13 +23,14 @@ class UpdatePolicyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_title' => 'required|string|max:255',
-            'customer_identity_number' => 'required|string|max:20',
-            'customer_phone' => 'required|string|max:20',
-            'customer_birth_date' => 'required|date',
-            'customer_address' => 'required|string',
+            // Müşteri alanları poliçe düzenlemeden güncellenemez
+            'customer_title' => 'prohibited',
+            'customer_identity_number' => 'prohibited',
+            'customer_phone' => 'prohibited',
+            'customer_birth_date' => 'prohibited',
+            'customer_address' => 'prohibited',
             'insured_name' => 'nullable|string|max:255',
-            'insured_phone' => 'nullable|string|max:20',
+            'insured_phone' => ['nullable','string','max:20','regex:/^0\d{3} \d{3} \d{2} \d{2}$/'],
             'policy_type' => 'required|string|max:255',
             'policy_company' => 'nullable|string|max:255',
             'policy_number' => ['required', 'string', 'max:255', Rule::unique('policies')->ignore($this->policy)],
@@ -47,6 +48,22 @@ class UpdatePolicyRequest extends FormRequest
             'payment_notes' => 'nullable|string',
             'invoice_number' => 'nullable|string|max:255',
             'tax_rate' => 'nullable|numeric|min:0|max:100',
+            // Dosyalar
+            'files' => 'nullable|array|max:4',
+            'files.*' => 'file|max:5120|mimes:pdf,csv,xlsx,xls,doc,docx,jpg,jpeg,png,rar',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'insured_phone.regex' => 'Sigorta Ettiren Telefon formatı geçersiz. Örnek: 0XXX XXX XX XX',
+            'end_date.after_or_equal' => 'Bitiş Tarihi, Başlangıç Tarihinden sonra veya eşit olmalıdır.',
         ];
     }
 }

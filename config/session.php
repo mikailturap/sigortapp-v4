@@ -6,14 +6,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Session Driver
+    | Varsayılan Oturum Sürücüsü
     |--------------------------------------------------------------------------
     |
-    | This option determines the default session driver that is utilized for
-    | incoming requests. Laravel supports a variety of storage options to
-    | persist session data. Database storage is a great default choice.
+    | Bu seçenek, gelen istekler için kullanılan varsayılan oturum
+    | sürücüsünü belirler. Laravel, oturum verilerini kalıcı hale
+    | getirmek için çeşitli depolama seçeneklerini destekler.
+    | Veritabanı depolama harika bir varsayılan seçimdir.
     |
-    | Supported: "file", "cookie", "database", "memcached",
+    | Desteklenen: "file", "cookie", "database", "memcached",
     |            "redis", "dynamodb", "array"
     |
     */
@@ -22,13 +23,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Lifetime
+    | Oturum Yaşam Süresi
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the number of minutes that you wish the session
-    | to be allowed to remain idle before it expires. If you want them
-    | to expire immediately when the browser is closed then you may
-    | indicate that via the expire_on_close configuration option.
+    | Burada, oturumun süresi dolmadan önce boşta kalmasına izin
+    | verilecek dakika sayısını belirtebilirsiniz. Tarayıcı
+    | kapatıldığında hemen süresi dolmasını istiyorsanız,
+    | expire_on_close yapılandırma seçeneği ile bunu belirtebilirsiniz.
     |
     */
 
@@ -38,12 +39,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Encryption
+    | Oturum Şifreleme
     |--------------------------------------------------------------------------
     |
-    | This option allows you to easily specify that all of your session data
-    | should be encrypted before it's stored. All encryption is performed
-    | automatically by Laravel and you may use the session like normal.
+    | Bu seçenek, tüm oturum verilerinizin saklanmadan önce
+    | şifrelenmesi gerektiğini kolayca belirtmenizi sağlar.
+    | Tüm şifreleme Laravel tarafından otomatik olarak
+    | gerçekleştirilir ve oturumu normal gibi kullanabilirsiniz.
     |
     */
 
@@ -51,12 +53,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session File Location
+    | Oturum Dosya Konumu
     |--------------------------------------------------------------------------
     |
-    | When utilizing the "file" session driver, the session files are placed
-    | on disk. The default storage location is defined here; however, you
-    | are free to provide another location where they should be stored.
+    | "file" oturum sürücüsü kullanırken, oturum dosyaları diske
+    | yerleştirilir. Varsayılan depolama konumu burada tanımlanmıştır;
+    | ancak, bunların saklanması gereken başka bir konum
+    | sağlamakta özgürsünüz.
     |
     */
 
@@ -64,12 +67,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Database Connection
+    | Oturum Veritabanı Bağlantısı
     |--------------------------------------------------------------------------
     |
-    | When using the "database" or "redis" session drivers, you may specify a
-    | connection that should be used to manage these sessions. This should
-    | correspond to a connection in your database configuration options.
+    | "database" veya "redis" oturum sürücülerini kullanırken, bu
+    | oturumları yönetmek için kullanılması gereken bir bağlantı
+    | belirtebilirsiniz. Bu, veritabanı yapılandırma seçeneklerinizdeki
+    | bir bağlantıya karşılık gelmelidir.
     |
     */
 
@@ -77,12 +81,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Database Table
+    | Oturum Veritabanı Tablosu
     |--------------------------------------------------------------------------
     |
-    | When using the "database" session driver, you may specify the table to
-    | be used to store sessions. Of course, a sensible default is defined
-    | for you; however, you're welcome to change this to another table.
+    | "database" oturum sürücüsünü kullanırken, oturumları saklamak
+    | için kullanılacak tabloyu belirtebilirsiniz. Tabii ki, sizin
+    | için mantıklı bir varsayılan tanımlanmıştır; ancak, bunu
+    | başka bir tabloya değiştirmekte özgürsünüz.
     |
     */
 
@@ -90,14 +95,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cache Store
+    | Oturum Önbellek Deposu
     |--------------------------------------------------------------------------
     |
-    | When using one of the framework's cache driven session backends, you may
-    | define the cache store which should be used to store the session data
-    | between requests. This must match one of your defined cache stores.
+    | Çerçevenin önbellek sürücülü oturum arka uçlarından birini
+    | kullanırken, istekler arasında oturum verilerini saklamak
+    | için kullanılması gereken önbellek deposunu tanımlayabilirsiniz.
+    | Bu, tanımladığınız önbellek depolarından biriyle eşleşmelidir.
     |
-    | Affects: "dynamodb", "memcached", "redis"
+    | Etkiler: "dynamodb", "memcached", "redis"
     |
     */
 
@@ -105,12 +111,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Sweeping Lottery
+    | Oturum Sweep Lottery
     |--------------------------------------------------------------------------
     |
-    | Some session drivers must manually sweep their storage location to get
-    | rid of old sessions from storage. Here are the chances that it will
-    | happen on a given request. By default, the odds are 2 out of 100.
+    | Bazı oturum sürücüleri, eski oturumları depolama konumundan
+    | temizlemek için manuel olarak geçiş yapmalıdır. İşte,
+    | bir istekte bu oluşma olasılığı. Varsayılan olarak,
+    | olasılık 2'dir.
     |
     */
 
@@ -118,12 +125,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Name
+    | Oturum Çerez Adı
     |--------------------------------------------------------------------------
     |
-    | Here you may change the name of the session cookie that is created by
-    | the framework. Typically, you should not need to change this value
-    | since doing so does not grant a meaningful security improvement.
+    | Burada, çerçeve tarafından oluşturulan oturum çerezini
+    | değiştirebilirsiniz. Genellikle, bu değeri değiştirmenize
+    | gerek yoktur, çünkü bu, anlamlı bir güvenlik iyileştirmesi
+    | sağlamaz.
     |
     */
 
@@ -134,12 +142,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Path
+    | Oturum Çerez Yolu
     |--------------------------------------------------------------------------
     |
-    | The session cookie path determines the path for which the cookie will
-    | be regarded as available. Typically, this will be the root path of
-    | your application, but you're free to change this when necessary.
+    | Oturum çerez yolu, çerezin kullanılabilir olduğu yolu belirler.
+    | Genellikle, uygulamanızın kök yolu olmalıdır, ancak
+    | gerekirse bunu değiştirebilirsiniz.
     |
     */
 
@@ -147,12 +155,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Domain
+    | Oturum Çerez Alanı
     |--------------------------------------------------------------------------
     |
-    | This value determines the domain and subdomains the session cookie is
-    | available to. By default, the cookie will be available to the root
-    | domain and all subdomains. Typically, this shouldn't be changed.
+    | Bu değer, çerezin kullanılabilir olduğu etki alanını ve alt
+    | etki alanlarını belirler. Varsayılan olarak, çerez
+    | kök etki alanına ve tüm alt etki alanlarına kullanılabilir.
+    | Genellikle, bu değeri değiştirmenize gerek yoktur.
     |
     */
 
@@ -160,12 +169,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | HTTPS Only Cookies
+    | HTTPS Sadece Çerezler
     |--------------------------------------------------------------------------
     |
-    | By setting this option to true, session cookies will only be sent back
-    | to the server if the browser has a HTTPS connection. This will keep
-    | the cookie from being sent to you when it can't be done securely.
+    | Bu seçeneği true olarak ayarlayarak, çerezlerin sadece HTTPS
+    | bağlantısı olan tarayıcılardan sunucuya geri gönderilmesini
+    | sağlayabilirsiniz. Bu, çerezlerin güvenli olmadığında
+    | sunucuya gönderilmesini engeller.
     |
     */
 
@@ -173,12 +183,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | HTTP Access Only
+    | HTTP Erişim Sadece
     |--------------------------------------------------------------------------
     |
-    | Setting this value to true will prevent JavaScript from accessing the
-    | value of the cookie and the cookie will only be accessible through
-    | the HTTP protocol. It's unlikely you should disable this option.
+    | Bu değeri true olarak ayarlayarak, çerezin değerine
+    | JavaScript'in erişmesini engelleyebilirsiniz ve çerez
+    | sadece HTTP protokolü üzerinden erişilebilir olacaktır.
+    | Bu seçeneği devre dışı bırakmamanız gerekir.
     |
     */
 
@@ -186,16 +197,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Same-Site Cookies
+    | Aynı Site Çerezleri
     |--------------------------------------------------------------------------
     |
-    | This option determines how your cookies behave when cross-site requests
-    | take place, and can be used to mitigate CSRF attacks. By default, we
-    | will set this value to "lax" to permit secure cross-site requests.
+    | Bu seçenek, çapraz site istekleri sırasında çerezlerin
+    | davranışını belirler ve CSRF saldırılarını önlemek için
+    | kullanılabilir. Varsayılan olarak, "lax" olarak ayarlanır
+    | güvenli çapraz site isteklerine izin vermek için.
     |
-    | See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
+    | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
     |
-    | Supported: "lax", "strict", "none", null
+    | Desteklenen: "lax", "strict", "none", null
     |
     */
 
@@ -203,12 +215,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Partitioned Cookies
+    | Bölünmüş Çerezler
     |--------------------------------------------------------------------------
     |
-    | Setting this value to true will tie the cookie to the top-level site for
-    | a cross-site context. Partitioned cookies are accepted by the browser
-    | when flagged "secure" and the Same-Site attribute is set to "none".
+    | Bu değeri true olarak ayarlayarak, çerezin çapraz site
+    | bağlamında kök siteye bağlanmasını sağlayabilirsiniz.
+    | Bölünmüş çerezler, tarayıcı tarafından "güvenli" olarak
+    | işaretlendiğinde ve Same-Site özelliği "none" olarak ayarlandığında
+    | kabul edilir.
     |
     */
 

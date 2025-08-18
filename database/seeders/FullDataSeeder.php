@@ -29,6 +29,9 @@ class FullDataSeeder extends Seeder
         DB::table('payment_schedules')->truncate();
         DB::table('payment_transactions')->truncate();
         DB::table('policy_cost_analysis')->truncate();
+        if (Schema::hasTable('policy_files')) {
+            DB::table('policy_files')->truncate();
+        }
         DB::table('policies')->truncate();
         DB::table('customer_accounts')->truncate();
         DB::table('customers')->truncate();
@@ -53,9 +56,9 @@ class FullDataSeeder extends Seeder
 
         $this->command->info('Müşteriler oluşturuluyor...');
 
-        // 250 benzersiz müşteri oluştur
+        // 50 benzersiz müşteri oluştur
         $customers = collect();
-        for ($i = 0; $i < 250; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             $isCorporate = $faker->boolean(30);
             $title = $isCorporate ? $faker->company : $faker->name;
             $identity = $isCorporate
@@ -117,7 +120,8 @@ class FullDataSeeder extends Seeder
                 $paymentDueDate = (clone $dueBase)->subDays(rand(1, 90));
             }
 
-            $insuredDifferent = $faker->boolean(35);
+            // Tüm alanlarda veri olması için sigorta ettiren bilgilerini doldur
+            $insuredDifferent = true;
 
             $policy = Policy::create([
                 'customer_id' => $customer->id,
@@ -127,17 +131,17 @@ class FullDataSeeder extends Seeder
                 'customer_birth_date' => $customer->birth_date ?? $faker->date('Y-m-d', '2006-01-01'),
                 'customer_address' => $customer->address ?? $faker->address,
 
-                'insured_name' => $insuredDifferent ? ($customer->customer_type === 'kurumsal' ? $faker->name : $faker->company) : null,
-                'insured_phone' => $insuredDifferent ? $faker->phoneNumber : null,
+                'insured_name' => $insuredDifferent ? ($customer->customer_type === 'kurumsal' ? $faker->company : $faker->name) : $customer->customer_title,
+                'insured_phone' => $insuredDifferent ? $faker->phoneNumber : ($customer->phone ?? $faker->phoneNumber),
 
                 'policy_type' => $policyType,
                 'policy_company' => $faker->randomElement($insuranceCompanies),
                 'policy_number' => $faker->unique()->bothify('POL-########'),
-                'plate_or_other' => $faker->optional(0.7)->bothify('##???##'),
+                'plate_or_other' => $faker->bothify('##???##'),
                 'issue_date' => $issueDate->format('Y-m-d'),
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => $endDate->format('Y-m-d'),
-                'document_info' => $faker->optional()->bothify('DOC-####'),
+                'document_info' => $faker->bothify('DOC-####'),
 
                 'tarsim_business_number' => ($policyType === 'TARSİM') ? $faker->numerify('##########') : null,
                 'tarsim_animal_number' => ($policyType === 'TARSİM') ? $faker->numerify('##########') : null,
@@ -152,7 +156,7 @@ class FullDataSeeder extends Seeder
                 'payment_status' => $paymentStatus,
                 'payment_due_date' => $paymentDueDate?->format('Y-m-d'),
                 'payment_date' => $paymentDate?->format('Y-m-d'),
-                'payment_notes' => $faker->optional()->sentence(),
+                'payment_notes' => $faker->sentence(),
                 'payment_method' => $faker->randomElement($paymentMethods),
                 'invoice_number' => 'INV-' . date('Y') . '-' . str_pad($faker->unique()->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
                 'tax_rate' => $taxRate,
@@ -169,8 +173,8 @@ class FullDataSeeder extends Seeder
                 'customer_balance' => $paymentStatus === 'ödendi' ? 0 : $totalAmount,
                 'customer_payment_terms' => $faker->randomElement(['peşin', '30 gün', '60 gün', '90 gün']),
                 'customer_credit_limit' => $faker->numberBetween(0, 100000),
-                'last_payment_reference' => $faker->optional()->bothify('REF-########'),
-                'last_payment_reminder' => $faker->optional()->dateTimeBetween('-60 days', 'now'),
+                'last_payment_reference' => $faker->bothify('REF-########'),
+                'last_payment_reminder' => $faker->dateTimeBetween('-60 days', 'now'),
             ]);
 
             // Taksit planı ve ödemeler
@@ -278,7 +282,7 @@ class FullDataSeeder extends Seeder
             );
         }
 
-        $this->command->info('Tam dolu 250 poliçe ve ilişkili veriler oluşturuldu.');
+        $this->command->info('Tam dolu 50 poliçe ve ilişkili veriler oluşturuldu.');
     }
 }
 

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('dashboard_privacy_settings', function (Blueprint $table) {
-            $table->dropColumn('description');
+        Schema::table('customers', function (Blueprint $table) {
+            $table->unique('customer_identity_number', 'customers_identity_unique');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('dashboard_privacy_settings', function (Blueprint $table) {
-            $table->text('description')->nullable();
+        Schema::table('customers', function (Blueprint $table) {
+            $table->dropUnique('customers_identity_unique');
         });
     }
 };

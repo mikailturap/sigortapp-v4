@@ -4,12 +4,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Filesystem Disk
+    | Varsayılan Dosya Sistemi Diski
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default filesystem disk that should be used
-    | by the framework. The "local" disk, as well as a variety of cloud
-    | based disks are available to your application for file storage.
+    | Burada çerçeve tarafından kullanılması gereken varsayılan dosya sistemi
+    | diskini belirtebilirsiniz. "local" diski ve çeşitli bulut tabanlı
+    | diskler, dosya depolama için uygulamanızda mevcuttur.
     |
     */
 
@@ -17,14 +17,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Filesystem Disks
+    | Dosya Sistemi Diskleri
     |--------------------------------------------------------------------------
     |
-    | Below you may configure as many filesystem disks as necessary, and you
-    | may even configure multiple disks for the same driver. Examples for
-    | most supported storage drivers are configured here for reference.
+    | Aşağıda gerekli olduğu kadar dosya sistemi diski yapılandırabilir ve
+    | aynı sürücü için birden fazla disk yapılandırabilirsiniz. En çok
+    | desteklenen depolama sürücüleri için örnekler referans için burada yapılandırılmıştır.
     |
-    | Supported drivers: "local", "ftp", "sftp", "s3"
+    | Desteklenen sürücüler: "local", "ftp", "sftp", "s3"
     |
     */
 
@@ -64,12 +64,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Symbolic Links
+    | Sembolik Bağlantılar
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the symbolic links that will be created when the
-    | `storage:link` Artisan command is executed. The array keys should be
-    | the locations of the links and the values should be their targets.
+    | Burada `storage:link` Artisan komutu çalıştırıldığında oluşturulacak
+    | sembolik bağlantıları yapılandırabilirsiniz. Dizi anahtarları
+    | bağlantıların konumları olmalı ve değerler hedefleri olmalıdır.
     |
     */
 

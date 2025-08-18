@@ -23,7 +23,7 @@
         </div>
     @endif
 
-    <form action="{{ route('policies.store') }}" method="POST">
+    <form action="{{ route('policies.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="row">
             <div class="col-md-6">
@@ -48,7 +48,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="customer_phone" class="form-label">Müşteri Telefon</label>
-                                    <input type="text" class="form-control" id="customer_phone" name="customer_phone" placeholder="0___ ___ __ __" value="{{ old('customer_phone') }}" required @if(!old('customer_title')) readonly @endif>
+                                    <input type="text" class="form-control" id="customer_phone" name="customer_phone" placeholder="0XXX XXX XX XX" value="{{ old('customer_phone') }}" required @if(!old('customer_title')) readonly @endif>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -84,7 +84,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="insured_phone" class="form-label">Sigorta Ettiren Telefon</label>
-                            <input type="text" class="form-control" id="insured_phone" name="insured_phone" placeholder="0___ ___ __ __" value="{{ old('insured_phone') }}">
+                            <input type="text" class="form-control" id="insured_phone" name="insured_phone" placeholder="0XXX XXX XX XX" value="{{ old('insured_phone') }}">
                         </div>
                     </div>
                 </div>
@@ -174,6 +174,16 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">Dosyalar</div>
+                    <div class="card-body">
+                        <div class="mb-2 text-muted small">En fazla 4 dosya, her biri en fazla 5 MB. İzinli türler: pdf, csv, xlsx, xls, doc, docx, jpg, jpeg, png, rar</div>
+                        <input type="file" name="files[]" id="files_input" class="form-control" multiple accept=".pdf,.csv,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png,.rar">
+                        <div class="form-text">Toplam 4 dosya sınırı. Her dosya 5MB veya daha küçük olmalı.</div>
+                        <ul id="selected_files_list" class="list-group mt-3"></ul>
                     </div>
                 </div>
             </div>
@@ -450,19 +460,34 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     // Telefon alanları otomatik format
-    const phoneInputs = [
-        document.getElementById('customer_phone'),
-        document.getElementById('insured_phone')
-    ].filter(Boolean);
-    phoneInputs.forEach(function(el){
-        el.addEventListener('input', function(e){ e.target.value = formatPhoneTR(e.target.value); });
-        // Paste temizliği
-        el.addEventListener('paste', function(e){
-            e.preventDefault();
-            const text = (e.clipboardData || window.clipboardData).getData('text');
-            e.target.value = formatPhoneTR(text);
+    // Telefon inputlarını 0XXX XXX XX XX formatına zorla
+    function formatToStandardPhone(value) {
+        let d = (value || '').replace(/\D/g, '').slice(0, 11);
+        if (!d) return '';
+        if (d[0] !== '0') d = '0' + d.slice(0, 10);
+        const first = d.slice(0, 4);      // 0 + 3 hane
+        const mid = d.slice(4, 7);
+        const part3 = d.slice(7, 9);
+        const part4 = d.slice(9, 11);
+        let out = first;
+        if (mid) out += ' ' + mid;
+        if (part3) out += ' ' + part3;
+        if (part4) out += ' ' + part4;
+        return out;
+    }
+
+    [document.getElementById('customer_phone'), document.getElementById('insured_phone')]
+        .filter(Boolean)
+        .forEach(function(el){
+            el.addEventListener('input', function(e){ e.target.value = formatToStandardPhone(e.target.value); });
+            el.addEventListener('paste', function(e){
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                e.target.value = formatToStandardPhone(text);
+            });
+            // İlk değer varsa normalize et
+            if (el.value) el.value = formatToStandardPhone(el.value);
         });
-    });
     
     // URL parametrelerinden müşteri bilgilerini doldur
     fillCustomerInfoFromURL();
@@ -513,5 +538,68 @@ function fillCustomerInfoFromURL() {
         }, 500);
     }
 }
+</script>
+<script>
+// Gelişmiş dosya seçim: listele + kaldır + 5MB + 4 dosya limiti
+document.addEventListener('DOMContentLoaded', function(){
+    const fileInput = document.getElementById('files_input');
+    const listEl = document.getElementById('selected_files_list');
+    const maxTotal = 4;
+    let selectedFiles = [];
+
+    function syncInputFiles() {
+        if (!fileInput) return;
+        const dt = new DataTransfer();
+        selectedFiles.forEach(f => dt.items.add(f));
+        fileInput.files = dt.files;
+    }
+
+    function renderSelectedList() {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        if (selectedFiles.length === 0) return;
+        selectedFiles.forEach((file, idx) => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            const left = document.createElement('div');
+            left.className = 'd-flex align-items-center gap-2';
+            left.innerHTML = '<i data-lucide="file" class="text-muted" style="width:16px;height:16px;"></i>'
+                + '<span>' + file.name + '</span>'
+                + '<small class="text-muted">(' + (file.size/1024).toFixed(1) + ' KB)</small>';
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-sm btn-outline-danger';
+            removeBtn.textContent = 'Kaldır';
+            removeBtn.addEventListener('click', function(){
+                selectedFiles.splice(idx, 1);
+                syncInputFiles();
+                renderSelectedList();
+            });
+            li.appendChild(left);
+            li.appendChild(removeBtn);
+            listEl.appendChild(li);
+        });
+        if (window.lucide) { window.lucide.createIcons(); }
+    }
+
+    if (fileInput && listEl) {
+        fileInput.addEventListener('change', function(){
+            const incoming = Array.from(fileInput.files || []);
+            for (const file of incoming) {
+                if (selectedFiles.length >= maxTotal) {
+                    alert('En fazla 4 dosya yükleyebilirsiniz.');
+                    break;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(file.name + ' dosyası çok büyük. Maksimum 5MB olmalıdır.');
+                    continue;
+                }
+                selectedFiles.push(file);
+            }
+            syncInputFiles();
+            renderSelectedList();
+        });
+    }
+});
 </script>
 @endpush

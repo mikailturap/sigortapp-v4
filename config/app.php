@@ -4,12 +4,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Name
+    | Uygulama Adı
     |--------------------------------------------------------------------------
     |
-    | This value is the name of your application, which will be used when the
-    | framework needs to place the application's name in a notification or
-    | other UI elements where an application name needs to be displayed.
+    | Bu değer, çerçeve bir bildirimde veya uygulama adının
+    | görüntülenmesi gereken diğer UI öğelerinde uygulamanızın adını yerleştirmesi gerektiğinde kullanılacak uygulamanızın adıdır.
     |
     */
 
@@ -17,12 +16,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Environment
+    | Uygulama Ortamı
     |--------------------------------------------------------------------------
     |
-    | This value determines the "environment" your application is currently
-    | running in. This may determine how you prefer to configure various
-    | services the application utilizes. Set this in your ".env" file.
+    | Bu değer, uygulamanızın şu anda çalıştığı "ortamı" belirler.
+    | Bu, uygulamanın kullandığı çeşitli servisleri nasıl
+    | yapılandırmayı tercih ettiğinizi belirleyebilir. Bunu ".env" dosyanızda ayarlayın.
     |
     */
 
@@ -30,12 +29,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Debug Mode
+    | Uygulama Hata Ayıklama Modu
     |--------------------------------------------------------------------------
     |
-    | When your application is in debug mode, detailed error messages with
-    | stack traces will be shown on every error that occurs within your
-    | application. If disabled, a simple generic error page is shown.
+    | Uygulamanız hata ayıklama modundayken, uygulama içinde
+    | oluşan her hatada detaylı hata mesajları ve yığın izleri
+    | gösterilecektir. Devre dışı bırakılırsa, basit genel bir hata sayfası gösterilir.
     |
     */
 
@@ -43,12 +42,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application URL
+    | Uygulama URL'si
     |--------------------------------------------------------------------------
     |
-    | This URL is used by the console to properly generate URLs when using
-    | the Artisan command line tool. You should set this to the root of
-    | the application so that it's available within Artisan commands.
+    | Bu URL, Artisan komut satırı aracını kullanırken URL'leri
+    | düzgün şekilde oluşturmak için konsol tarafından kullanılır.
+    | Bunu uygulamanın köküne ayarlamalısınız, böylece
+    | Artisan komutları içinde kullanılabilir.
     |
     */
 
@@ -56,42 +56,45 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Timezone
+    | Uygulama Zaman Dilimi
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. The timezone
-    | is set to "UTC" by default as it is suitable for most use cases.
+    | Burada uygulamanız için varsayılan zaman dilimini belirtebilirsiniz,
+    | bu PHP tarih ve tarih-saat fonksiyonları tarafından kullanılacaktır.
+    | Zaman dilimi varsayılan olarak "UTC" olarak ayarlanmıştır,
+    | çünkü çoğu kullanım durumu için uygundur.
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Europe/Istanbul',
 
     /*
     |--------------------------------------------------------------------------
-    | Application Locale Configuration
+    | Uygulama Yerel Ayar Yapılandırması
     |--------------------------------------------------------------------------
     |
-    | The application locale determines the default locale that will be used
-    | by Laravel's translation / localization methods. This option can be
-    | set to any locale for which you plan to have translation strings.
+    | Uygulama yerel ayarı, Laravel'in çeviri / yerelleştirme
+    | yöntemleri tarafından kullanılacak varsayılan yerel ayarı belirler.
+    | Bu seçenek, çeviri planladığınız herhangi bir yerel ayar için
+    | ayarlanabilir.
     |
     */
 
     'locale' => env('APP_LOCALE', 'tr'),
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'tr'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*
     |--------------------------------------------------------------------------
-    | Encryption Key
+    | Şifreleme Anahtarı
     |--------------------------------------------------------------------------
     |
-    | This key is utilized by Laravel's encryption services and should be set
-    | to a random, 32 character string to ensure that all encrypted values
-    | are secure. You should do this prior to deploying the application.
+    | Bu anahtar Laravel'in şifreleme servisleri tarafından kullanılır ve
+    | tüm şifrelenmiş değerlerin güvenli olmasını sağlamak için rastgele,
+    | 32 karakterlik bir dize olarak ayarlanmalıdır. Bunu uygulamayı
+    | dağıtmadan önce yapmalısınız.
     |
     */
 
@@ -107,14 +110,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Maintenance Mode Driver
+    | Bakım Modu Sürücüsü
     |--------------------------------------------------------------------------
     |
-    | These configuration options determine the driver used to determine and
-    | manage Laravel's "maintenance mode" status. The "cache" driver will
-    | allow maintenance mode to be controlled across multiple machines.
+    | Bu yapılandırma seçenekleri, Laravel'in "bakım modu" durumunu belirlemek
+    | ve yönetmek için kullanılan sürücüyü belirler. "cache" sürücüsü,
+    | bakım modunun çoklu makine üzerinde kontrol edilmesini sağlayacaktır.
     |
-    | Supported drivers: "file", "cache"
+    | Desteklenen sürücüler: "file", "cache"
     |
     */
 

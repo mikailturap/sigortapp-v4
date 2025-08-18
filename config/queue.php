@@ -4,12 +4,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Queue Connection Name
+    | Varsayılan Kuyruk Bağlantı Adı
     |--------------------------------------------------------------------------
     |
-    | Laravel's queue supports a variety of backends via a single, unified
-    | API, giving you convenient access to each backend using identical
-    | syntax for each. The default queue connection is defined below.
+    | Laravel'in kuyruğu, tek, birleşik bir API aracılığıyla çeşitli
+    | arka uçları destekler, her arka uç için aynı sözdizimini
+    | kullanarak her arka uca uygun erişim sağlar. Varsayılan
+    | kuyruk bağlantısı aşağıda tanımlanmıştır.
     |
     */
 
@@ -17,14 +18,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Queue Connections
+    | Kuyruk Bağlantıları
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the connection options for every queue backend
-    | used by your application. An example configuration is provided for
-    | each backend supported by Laravel. You're also free to add more.
+    | Burada uygulamanız tarafından kullanılan her kuyruk arka ucu
+    | için bağlantı seçeneklerini yapılandırabilirsiniz. Laravel
+    | tarafından desteklenen her arka uç için örnek bir yapılandırma
+    | sağlanmıştır. Daha fazla eklemekte de özgürsünüz.
     |
-    | Drivers: "sync", "database", "beanstalkd", "sqs", "redis", "null"
+    | Sürücüler: "sync", "database", "beanstalkd", "sqs", "redis", "null"
     |
     */
 
@@ -76,12 +78,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Job Batching
+    | İş Toplu İşleme
     |--------------------------------------------------------------------------
     |
-    | The following options configure the database and table that store job
-    | batching information. These options can be updated to any database
-    | connection and table which has been defined by your application.
+    | Aşağıdaki seçenekler, iş toplu işleme bilgilerini saklayan
+    | veritabanı ve tabloyu yapılandırır. Bu seçenekler, uygulamanız
+    | tarafından tanımlanan herhangi bir veritabanı bağlantısı ve
+    | tabloya güncellenebilir.
     |
     */
 
@@ -92,14 +95,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Failed Queue Jobs
+    | Başarısız Kuyruk İşleri
     |--------------------------------------------------------------------------
     |
-    | These options configure the behavior of failed queue job logging so you
-    | can control how and where failed jobs are stored. Laravel ships with
-    | support for storing failed jobs in a simple file or in a database.
+    | Bu seçenekler, başarısız kuyruk işi loglama davranışını
+    | yapılandırır, böylece başarısız işlerin nasıl ve nerede
+    | saklanacağını kontrol edebilirsiniz. Laravel, başarısız
+    | işleri basit bir dosyada veya veritabanında saklama
+    | desteği ile birlikte gelir.
     |
-    | Supported drivers: "database-uuids", "dynamodb", "file", "null"
+    | Desteklenen sürücüler: "database-uuids", "dynamodb", "file", "null"
     |
     */
 

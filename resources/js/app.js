@@ -1,5 +1,5 @@
 import './bootstrap';
 
-// Import Bootstrap as module and expose globally for inline scripts (e.g., new bootstrap.Modal(...))
+// Bootstrap'ı modül olarak içe aktar ve satır içi scriptler için global olarak aç (örn. new bootstrap.Modal(...))
 import * as bootstrap from 'bootstrap';
 window.bootstrap = bootstrap;

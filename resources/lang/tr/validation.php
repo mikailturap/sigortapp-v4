@@ -100,14 +100,35 @@ return [
     'url' => ':attribute biçimi geçersiz.',
     'uuid' => ':attribute geçerli bir UUID olmalıdır.',
 
+    'custom' => [
+        'insured_phone' => [
+            'regex' => 'Sigorta Ettiren Telefon formatı geçersiz. Örnek: 0XXX XXX XX XX',
+        ],
+        'customer_phone' => [
+            'regex' => 'Müşteri Telefonu formatı geçersiz. Örnek: 0XXX XXX XX XX',
+        ],
+        'phone' => [
+            'regex' => 'Telefon formatı geçersiz. Örnek: 0XXX XXX XX XX',
+        ],
+        'end_date' => [
+            'after_or_equal' => 'Bitiş Tarihi, Başlangıç Tarihinden sonra veya eşit olmalıdır.',
+        ],
+    ],
+
     'attributes' => [
         'customer_title' => 'Müşteri Ünvanı',
         'customer_identity_number' => 'TC/Vergi No',
         'customer_phone' => 'Müşteri Telefonu',
+        'insured_phone' => 'Sigorta Ettiren Telefon',
+        'phone' => 'Telefon',
+        'email' => 'E-posta',
+        'address' => 'Adres',
+        'customer_type' => 'Müşteri Türü',
+        'notes' => 'Notlar',
+        'birth_date' => 'Doğum Tarihi',
         'customer_birth_date' => 'Doğum Tarihi',
         'customer_address' => 'Adres',
         'insured_name' => 'Sigorta Ettiren Ünvan',
-        'insured_phone' => 'Sigorta Ettiren Telefon',
         'policy_type' => 'Poliçe Türü',
         'policy_company' => 'Poliçe Şirketi',
         'policy_number' => 'Poliçe No',

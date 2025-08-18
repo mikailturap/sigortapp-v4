@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePolicyRequest;
 use App\Http\Requests\UpdatePolicyRequest;
 use App\Models\Policy;
+use App\Models\PolicyFile;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Mail\PolicyReminderMail;
@@ -14,11 +15,13 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PoliciesTrackingExport;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PolicyController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Kaynakların listesini görüntüle.
      */
     public function index(Request $request)
     {
@@ -80,9 +83,9 @@ class PolicyController extends Controller
             $perPage = 25;
         }
 
-        // Sıralama
-        $sortBy = $request->get('sort', 'end_date');
-        $sortOrder = $request->get('order', 'asc');
+        // Sıralama - varsayılan en son güncellenenler üstte
+        $sortBy = $request->get('sort', 'updated_at');
+        $sortOrder = $request->get('order', 'desc');
         
         // Sıralama alanlarını kontrol et
         $allowedSortFields = [
@@ -97,20 +100,22 @@ class PolicyController extends Controller
             'status',
             'customer_identity_number',
             'customer_phone',
-            'issue_date'
+            'issue_date',
+            'updated_at',
+            'created_at'
         ];
         
         if (!in_array($sortBy, $allowedSortFields)) {
-            $sortBy = 'end_date';
+            $sortBy = 'updated_at';
         }
         
         // Sıralama yönünü kontrol et
-        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
         // Toplam poliçe sayısını hesapla (filtrelenmemiş)
         $totalPoliciesCount = Policy::count();
 
-        // Laravel pagination kullan
+        // Laravel sayfalama kullan
         $policies = $policies->orderBy($sortBy, $sortOrder)->paginate($perPage)->withQueryString();
 
         // Bildirim mantığı
@@ -138,7 +143,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Display the dashboard with summary information.
+     * Dashboard'u özet bilgi ile görüntüle.
      */
     public function dashboard()
     {
@@ -198,7 +203,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Yeni kaynağı oluşturmak için formu görüntüle.
      */
     public function create()
     {
@@ -206,7 +211,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Yeni kaynağı depolama.
      */
     public function store(StorePolicyRequest $request)
     {
@@ -218,10 +223,10 @@ class PolicyController extends Controller
 
         // Sigorta ettiren bilgileri boşsa, müşteri bilgilerini kullan
         if (empty($validatedData['insured_name'])) {
-            $validatedData['insured_name'] = $validatedData['customer_title'];
+            $validatedData['insured_name'] = $customer->customer_title;
         }
         if (empty($validatedData['insured_phone'])) {
-            $validatedData['insured_phone'] = $validatedData['customer_phone'];
+            $validatedData['insured_phone'] = $customer->phone;
         }
 
         // Varsayılan değerleri ayarla
@@ -236,6 +241,26 @@ class PolicyController extends Controller
             $policy->calculateNetRevenue();
             $policy->calculateTax();
             $policy->calculateTotalAmount();
+        }
+
+        // Dosya yükleme (toplam 4 dosya limiti)
+        if ($request->hasFile('files')) {
+            $files = $request->file('files');
+            $existingCount = $policy->files()->count();
+            $newCount = count($files);
+            if ($existingCount + $newCount > 4) {
+                return back()->withErrors(['files' => 'En fazla 4 dosya yükleyebilirsiniz.'])->withInput();
+            }
+            foreach ($files as $uploadedFile) {
+                $storedPath = $uploadedFile->store('policy-files/' . $policy->id, 'public');
+                $policy->files()->create([
+                    'original_name' => $uploadedFile->getClientOriginalName(),
+                    'path' => $storedPath,
+                    'disk' => 'public',
+                    'mime_type' => $uploadedFile->getClientMimeType(),
+                    'size' => $uploadedFile->getSize(),
+                ]);
+            }
         }
 
         return redirect()->route('policies.index')->with('success', 'Poliçe başarıyla oluşturuldu.');
@@ -336,34 +361,40 @@ class PolicyController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Belirtilen kaynağı görüntüle.
      */
     public function show(Policy $policy)
     {
+        $policy->load('files');
         return view('policies.show', compact('policy'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Belirtilen kaynağı düzenlemek için formu görüntüle.
      */
     public function edit(Policy $policy)
     {
+        $policy->load('files');
         return view('policies.edit', compact('policy'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Belirtilen kaynağı güncelle.
      */
     public function update(UpdatePolicyRequest $request, Policy $policy)
     {
+        Log::info("Update method called for policy {$policy->id}");
         $validatedData = $request->validated();
 
-        // Sigorta ettiren bilgileri boşsa, müşteri bilgilerini kullan
+        // Güvence: müşteri alanları istenmeden gelirse yoksay
+        unset($validatedData['customer_title'], $validatedData['customer_identity_number'], $validatedData['customer_phone'], $validatedData['customer_birth_date'], $validatedData['customer_address']);
+
+        // Sigorta ettiren bilgileri boşsa, poliçenin müşteri bilgilerini kullan
         if (empty($validatedData['insured_name'])) {
-            $validatedData['insured_name'] = $validatedData['customer_title'];
+            $validatedData['insured_name'] = $policy->customer_title;
         }
         if (empty($validatedData['insured_phone'])) {
-            $validatedData['insured_phone'] = $validatedData['customer_phone'];
+            $validatedData['insured_phone'] = $policy->customer_phone;
         }
 
         // Eğer bitiş tarihi değiştiyse, bildirim zaman damgalarını sıfırla
@@ -374,21 +405,52 @@ class PolicyController extends Controller
 
         $policy->update($validatedData);
 
+        // Yeni dosya yükleme (var olanlara ek) ve toplam 4 sınırı
+        if ($request->hasFile('files')) {
+            $files = $request->file('files');
+            $existingCount = $policy->files()->count();
+            $newCount = count($files);
+            if ($existingCount + $newCount > 4) {
+                return back()->withErrors(['files' => 'Toplamda en fazla 4 dosya yükleyebilirsiniz.'])->withInput();
+            }
+            foreach ($files as $uploadedFile) {
+                $storedPath = $uploadedFile->store('policy-files/' . $policy->id, 'public');
+                $policy->files()->create([
+                    'original_name' => $uploadedFile->getClientOriginalName(),
+                    'path' => $storedPath,
+                    'disk' => 'public',
+                    'mime_type' => $uploadedFile->getClientMimeType(),
+                    'size' => $uploadedFile->getSize(),
+                ]);
+            }
+        }
+
         return redirect()->route('policies.index')->with('success', 'Poliçe başarıyla güncellendi.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Belirtilen kaynağı sil.
      */
     public function destroy(Policy $policy)
     {
+        Log::info("Policy destroy called - Policy ID: {$policy->id}, Policy Number: {$policy->policy_number}");
+        
+        // İlişkili dosyaları da sil
+        foreach ($policy->files as $file) {
+            if ($file->disk && $file->path) {
+                Storage::disk($file->disk)->delete($file->path);
+            }
+            $file->delete();
+        }
         $policy->delete();
+        
+        Log::info("Policy deleted successfully");
 
         return redirect()->route('policies.index')->with('success', 'Poliçe başarıyla silindi.');
     }
 
     /**
-     * Toggle the status of the specified resource.
+     * Belirtilen kaynağın durumunu değiştir.
      */
     public function toggleStatus(Request $request, Policy $policy)
     {
@@ -410,7 +472,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Perform bulk actions on policies.
+     * Kaynakların toplu işlemlerini gerçekleştir.
      */
     public function bulkActions(Request $request)
     {
@@ -461,7 +523,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Download PDF of the specified policy.
+     * Belirtilen poliçenin PDF'ini indir.
      */
     public function downloadPdf(Policy $policy)
     {
@@ -470,7 +532,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Dismiss the notification for the specified policy.
+     * Belirtilen poliçenin bildirimini kapat.
      */
     public function dismissNotification(Policy $policy)
     {
@@ -479,8 +541,69 @@ class PolicyController extends Controller
         return back()->with('success', 'Bildirim başarıyla kapatıldı.');
     }
 
+    // Dosya indir
+    public function downloadFile(Policy $policy, PolicyFile $file)
+    {
+        if ($file->policy_id !== $policy->id) {
+            abort(404);
+        }
+        $disk = Storage::disk($file->disk);
+        $stream = $disk->readStream($file->path);
+        $filename = $file->original_name ?: basename($file->path);
+        $mime = $file->mime_type ?: 'application/octet-stream';
+
+        return response()->streamDownload(function() use ($stream) {
+            if (is_resource($stream)) {
+                fpassthru($stream);
+                fclose($stream);
+            }
+        }, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+        ]);
+    }
+
+    // Dosya görüntüle (inline)
+    public function previewFile(Policy $policy, PolicyFile $file)
+    {
+        if ($file->policy_id !== $policy->id) {
+            abort(404);
+        }
+        $mime = $file->mime_type ?: 'application/octet-stream';
+        $content = Storage::disk($file->disk)->get($file->path);
+        return response($content)->header('Content-Type', $mime);
+    }
+
+    // Dosya sil
+    public function deleteFile(Request $request, Policy $policy, PolicyFile $file)
+    {
+        Log::info("Delete file called - Policy ID: {$policy->id}, File ID: {$file->id}, File name: {$file->original_name}");
+        
+        if ($file->policy_id !== $policy->id) {
+            Log::error("File policy mismatch - File policy_id: {$file->policy_id}, Expected: {$policy->id}");
+            abort(404);
+        }
+        
+        if ($file->disk && $file->path) {
+            Storage::disk($file->disk)->delete($file->path);
+            Log::info("File deleted from storage: {$file->path}");
+        }
+        
+        $file->delete();
+        Log::info("File record deleted from database");
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Dosya silindi.'
+            ]);
+        }
+        
+        return redirect()->route('policies.edit', $policy)->with('success', 'Dosya silindi.');
+    }
+
     /**
-     * Send a reminder email for the specified policy.
+     * Belirtilen poliçenin hatırlatıcı e-postasını gönder.
      */
     public function sendReminderEmail(Policy $policy)
     {
@@ -497,7 +620,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Display the policy tracking page.
+     * Poliçe takip sayfasını görüntüle.
      */
     public function policyTracking(Request $request)
     {
@@ -544,7 +667,7 @@ class PolicyController extends Controller
     }
 
     /**
-     * Export tracking lists to CSV (expired, today, upcoming)
+     * Takip listelerini CSV'ye (süresi dolmuş, bugün, yaklaşan) dışa aktar.
      */
     public function trackingExport(Request $request)
     {

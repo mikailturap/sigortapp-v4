@@ -9,7 +9,7 @@ use App\Models\Customer;
 class CustomerSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Veritabanı seed'lerini çalıştır.
      */
     public function run(): void
     {

@@ -4,12 +4,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Authentication Defaults
+    | Kimlik Doğrulama Varsayılanları
     |--------------------------------------------------------------------------
     |
-    | This option defines the default authentication "guard" and password
-    | reset "broker" for your application. You may change these values
-    | as required, but they're a perfect start for most applications.
+    | Bu seçenek, uygulamanız için varsayılan kimlik doğrulama "guard"ını ve şifre
+    | sıfırlama "broker"ını tanımlar. Bu değerleri gerektiği gibi değiştirebilirsiniz,
+    | ancak çoğu uygulama için mükemmel bir başlangıçtır.
     |
     */
 
@@ -20,18 +20,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Authentication Guards
+    | Kimlik Doğrulama Guard'ları
     |--------------------------------------------------------------------------
     |
-    | Next, you may define every authentication guard for your application.
-    | Of course, a great default configuration has been defined for you
-    | which utilizes session storage plus the Eloquent user provider.
+    | Sonra, uygulamanız için her kimlik doğrulama guard'ını tanımlayabilirsiniz.
+    | Tabii ki, oturum depolama artı Eloquent kullanıcı sağlayıcısını kullanan
+    | harika bir varsayılan yapılandırma sizin için tanımlanmıştır.
     |
-    | All authentication guards have a user provider, which defines how the
-    | users are actually retrieved out of your database or other storage
-    | system used by the application. Typically, Eloquent is utilized.
+    | Tüm kimlik doğrulama guard'larının, kullanıcıların veritabanınızdan veya
+    | uygulama tarafından kullanılan diğer depolama sisteminden nasıl gerçekte
+    | alındığını tanımlayan bir kullanıcı sağlayıcısı vardır. Tipik olarak Eloquent kullanılır.
     |
-    | Supported: "session"
+    | Desteklenen: "session"
     |
     */
 
@@ -44,18 +44,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | User Providers
+    | Kullanıcı Sağlayıcıları
     |--------------------------------------------------------------------------
     |
-    | All authentication guards have a user provider, which defines how the
-    | users are actually retrieved out of your database or other storage
-    | system used by the application. Typically, Eloquent is utilized.
+    | Tüm kimlik doğrulama guard'larının, kullanıcıların veritabanınızdan veya
+    | uygulama tarafından kullanılan diğer depolama sisteminden nasıl gerçekte
+    | alındığını tanımlayan bir kullanıcı sağlayıcısı vardır. Tipik olarak Eloquent kullanılır.
     |
-    | If you have multiple user tables or models you may configure multiple
-    | providers to represent the model / table. These providers may then
-    | be assigned to any extra authentication guards you have defined.
+    | Birden fazla kullanıcı tablosu veya modeliniz varsa, modeli / tabloyu
+    | temsil etmek için birden fazla sağlayıcı yapılandırabilirsiniz. Bu sağlayıcılar
+    | daha sonra tanımladığınız ekstra kimlik doğrulama guard'larına atanabilir.
     |
-    | Supported: "database", "eloquent"
+    | Desteklenen: "database", "eloquent"
     |
     */
 
@@ -73,20 +73,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Resetting Passwords
+    | Şifreleri Sıfırlama
     |--------------------------------------------------------------------------
     |
-    | These configuration options specify the behavior of Laravel's password
-    | reset functionality, including the table utilized for token storage
-    | and the user provider that is invoked to actually retrieve users.
+    | Bu yapılandırma seçenekleri, token depolama için kullanılan tablo ve
+    | kullanıcıları gerçekte almak için çağrılan kullanıcı sağlayıcısı dahil
+    | olmak üzere Laravel'in şifre sıfırlama işlevselliğinin davranışını belirtir.
     |
-    | The expiry time is the number of minutes that each reset token will be
-    | considered valid. This security feature keeps tokens short-lived so
-    | they have less time to be guessed. You may change this as needed.
+    | Geçerlilik süresi, her sıfırlama token'ının geçerli sayılacağı dakika
+    | sayısıdır. Bu güvenlik özelliği token'ları kısa ömürlü tutar, böylece
+    | tahmin edilmeleri için daha az zamana sahip olurlar. Bunu gerektiği gibi değiştirebilirsiniz.
     |
-    | The throttle setting is the number of seconds a user must wait before
-    | generating more password reset tokens. This prevents the user from
-    | quickly generating a very large amount of password reset tokens.
+    | Throttle ayarı, kullanıcının daha fazla şifre sıfırlama token'ı
+    | oluşturmadan önce beklemesi gereken saniye sayısıdır. Bu, kullanıcının
+    | çok büyük miktarda şifre sıfırlama token'ı hızlıca oluşturmasını önler.
     |
     */
 
@@ -101,12 +101,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Password Confirmation Timeout
+    | Şifre Onaylama Zaman Aşımı
     |--------------------------------------------------------------------------
     |
-    | Here you may define the number of seconds before a password confirmation
-    | window expires and users are asked to re-enter their password via the
-    | confirmation screen. By default, the timeout lasts for three hours.
+    | Burada, şifre onaylama penceresinin süresi dolduğunda ve kullanıcıların
+    | onay ekranından tekrar şifre girmesini istediğiniz saniye sayısını tanımlayabilirsiniz.
+    | Varsayılan olarak, zaman aşımı üç saat sürer.
     |
     */
 

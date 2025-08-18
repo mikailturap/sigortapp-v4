@@ -70,6 +70,11 @@ class Policy extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function files(): HasMany
+    {
+        return $this->hasMany(PolicyFile::class);
+    }
+
     // Gelir Yönetimi Metodları
     public function calculateCommission()
     {
